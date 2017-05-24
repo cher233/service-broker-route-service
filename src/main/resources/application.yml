@@ -1,0 +1,43 @@
+#    spring:
+#      profiles: cloud
+#      datasource:
+#          url: ${cloud.services.postgresql.connection.jdbcurl}&stringtype=unspecified
+#          driver-class-name: org.postgresql.Driver
+#          username: ${cloud.services.postgresql.connection.username}
+#          password: ${cloud.services.postgresql.connection.password}
+#          connectionProperties: stringtype=unspecified
+#          idleConnectionTestPeriod: 60
+#          idleMaxAge:  3600
+#          maxConnectionsPerPartition: 30
+#          minConnectionsPerPartition: 10
+#          partitionCount: 3
+#          acquireIncrement: 5
+#          statementsCacheSize: 100
+#      jpa:
+#          ddl-auto: none
+#          show-sql: true
+
+#   ---
+
+spring:
+  profiles: local
+  datasource:
+      url: jdbc:postgresql://localhost:5432/audit
+      driver-class-name: org.postgresql.Driver
+      username: postgres
+      password: chkch0000
+      idleConnectionTestPeriod: 60
+      idleMaxAge:  3600
+      maxConnectionsPerPartition: 30
+      minConnectionsPerPartition: 10
+      partitionCount: 3
+      acquireIncrement: 5
+      statementsCacheSize: 100
+  jpa:
+      ddl-auto: none
+      show-sql: true
+
+---
+spring:
+  profiles:
+    active: local
