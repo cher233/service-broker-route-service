@@ -3,7 +3,8 @@ CREATE SCHEMA route_service;
 CREATE TABLE route_service.route_Info
 (
 route_id INTEGER PRIMARY KEY ,
-route VARCHAR(500) NOT NULL
+route_name VARCHAR(500) NOT NULL,
+service_id INTEGER REFERENCES service_instances(service_id) ON UPDATE CASCADE  ON DELETE CASCADE
 );
 
 CREATE TABLE route_service.filter_Info
@@ -12,12 +13,12 @@ filter_id INTEGER PRIMARY KEY ,
 filter_name VARCHAR(500) NOT NULL
 );
 
-CREATE TABLE route_service.filter_to_route
+CREATE TABLE route_service.filters_to_route
 (
+id INTEGER PRIMARY KEY,
 route_id INTEGER REFERENCES route_Info(route_id) ON UPDATE CASCADE  ON DELETE CASCADE,
 app_guid VARCHAR(500) NOT NULL,
 filter_id INTEGER REFERENCES filter_Info(filter_id) ON UPDATE CASCADE  ON DELETE CASCADE,
-PRIMARY KEY (route_id, filter_id)
 );
 
 CREATE TABLE route_service.service_instances
@@ -52,4 +53,8 @@ CREATE TABLE route_service.additional_info
 );
 
 INSERT INTO filter_Info(filter_id, filter_name) VALUES
-(1, 'Directory_Traversal'),(2, 'Authentication_Bypass'),(3,'Sql_Injection'),(4,'XSS');
+(1, 'Default'),
+(2, 'Directory_Traversal'),
+(3, 'Authentication_Bypass'),
+(4,'Sql_Injection'),
+(5,'XSS');
