@@ -2,12 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="151331dd-72ec-48d7-8ab2-f44516df21f0" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/servicebroker/routeservice/model/Filters.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/servicebroker/routeservice/entity/FilterToRoute.java" afterPath="$PROJECT_DIR$/src/main/java/org/servicebroker/routeservice/entity/FilterToRoute.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/servicebroker/routeservice/entity/Route.java" afterPath="$PROJECT_DIR$/src/main/java/org/servicebroker/routeservice/entity/Route.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/db/migration/V1__Initial_Setup.sql" afterPath="$PROJECT_DIR$/src/main/resources/db/migration/V1__Initial_Setup.sql" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -856,7 +851,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1495645951189</updated>
-      <workItem from="1495645954284" duration="6822000" />
+      <workItem from="1495645954284" duration="6870000" />
     </task>
     <task id="LOCAL-00001" summary="service-broker-route-service first commit">
       <created>1495647045553</created>
@@ -879,11 +874,18 @@
       <option name="project" value="LOCAL" />
       <updated>1495647431680</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="added resources and entities.">
+      <created>1495655056799</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1495655056799</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="6822000" />
+    <option name="totallyTimeSpent" value="6870000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-9" y="-9" width="1932" height="1048" extended-state="0" />
