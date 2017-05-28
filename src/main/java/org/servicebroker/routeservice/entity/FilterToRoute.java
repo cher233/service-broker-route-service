@@ -1,17 +1,9 @@
 package org.servicebroker.routeservice.entity;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.apache.openjpa.persistence.jdbc.Columns;
-import org.servicebroker.routeservice.model.Filters;
 
 import javax.persistence.*;
-
-
-
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 /**
  * Created by Cher on 24/05/2017.

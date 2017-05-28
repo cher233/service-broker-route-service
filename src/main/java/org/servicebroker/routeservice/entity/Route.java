@@ -1,9 +1,6 @@
 package org.servicebroker.routeservice.entity;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -14,12 +11,12 @@ import java.util.Set;
  */
 @Data
 @NoArgsConstructor
-@RequiredArgsConstructor
 @Entity
 @Table(name = "route_info", schema="route_service")
 public class Route {
 
     @Id
+    @Getter
     @Column(name = "route_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long routeId;
@@ -31,6 +28,11 @@ public class Route {
     @NonNull
     @Column(name = "route_name")
     private String routeName;
+
+    public Route(Long serviceId, String routeName) {
+        this.serviceId = serviceId;
+        this.routeName = routeName;
+    }
 
     //@OneToMany(mappedBy = "route")
     //@ElementCollection
