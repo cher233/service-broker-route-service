@@ -21,7 +21,6 @@ import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 @Data
 @Entity
 @RequiredArgsConstructor
-@NoArgsConstructor
 @Table(name = "filters_to_route", schema="route_service")
 public class FilterToRoute
 {
