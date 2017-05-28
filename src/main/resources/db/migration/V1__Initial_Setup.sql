@@ -15,15 +15,16 @@ filter_name VARCHAR(500) NOT NULL
 
 CREATE TABLE route_service.filters_to_route
 (
-id INTEGER PRIMARY KEY,
 route_id INTEGER REFERENCES route_Info(route_id) ON UPDATE CASCADE  ON DELETE CASCADE,
 app_guid VARCHAR(500) NOT NULL,
 filter_id INTEGER REFERENCES filter_Info(filter_id) ON UPDATE CASCADE  ON DELETE CASCADE,
+PRIMARY KEY (route_id,filter_id)
 );
 
 CREATE TABLE route_service.service_instances
 (
 service_id INTEGER PRIMARY KEY,
+service VARCHAR(100) NOT NULL,
 plan VARCHAR(500) ,
 organization_guid VARCHAR(100) NOT NULL,
 space_guid VARCHAR(100)  NOT NULL

@@ -10,7 +10,6 @@ import org.springframework.cloud.servicebroker.model.UpdateServiceInstanceReques
 /**
  * An instance of a ServiceDefinition.
  *
- * @author sgreenberg@pivotal.io
  */
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
 public class ServiceInstance {

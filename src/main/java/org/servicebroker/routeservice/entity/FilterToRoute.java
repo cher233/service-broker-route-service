@@ -1,13 +1,15 @@
 package org.servicebroker.routeservice.entity;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.apache.openjpa.persistence.jdbc.Columns;
 import org.servicebroker.routeservice.model.Filters;
 
 import javax.persistence.*;
 
-import java.util.ArrayList;
+
 
 import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
@@ -17,8 +19,10 @@ import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 
 @Data
-@Embeddable
-//@Table(name = "filters_to_route", schema="route_service")
+@Entity
+@RequiredArgsConstructor
+@NoArgsConstructor
+@Table(name = "filters_to_route", schema="route_service")
 public class FilterToRoute
 {
 
@@ -30,9 +34,10 @@ public class FilterToRoute
     //@JoinColumn(name="route_id")
     //private Route route;
 
-    @Column(name = "filer_id")
-    private Filters filterId;
+    @EmbeddedId
+    private FilterToRouteKey key;
 
     @Column(name = "app_guid")
     private String appGuid;
 }
+
