@@ -12,7 +12,8 @@ CREATE TABLE route_service.route_info
 (
 route_id FLOAT PRIMARY KEY ,
 route_name VARCHAR(500) NOT NULL,
-service_id FLOAT REFERENCES route_service.service_instances(service_id) ON UPDATE CASCADE  ON DELETE CASCADE
+service_id FLOAT REFERENCES route_service.service_instances(service_id) ON UPDATE CASCADE  ON DELETE CASCADE,
+bind_id FLOAT NOT NULL
 );
 
 CREATE TABLE route_service.filter_info
