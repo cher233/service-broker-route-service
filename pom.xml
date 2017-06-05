@@ -99,10 +99,11 @@
 			<version>${springCloudServiceBrokerVersion}</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
+			<version>1.5.3.RELEASE</version>
 		</dependency>
 
 		<dependency>

@@ -14,8 +14,7 @@ import javax.persistence.Entity;
  * An instance of a ServiceDefinition.
  *
  */
-@Data
-@Entity
+
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
 public class ServiceInstance {
 

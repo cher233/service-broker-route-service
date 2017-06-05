@@ -21,7 +21,7 @@ import java.util.Map;
 @Slf4j
 public class OpenJpaConfig{
 
-    private static final String BASE_PACKAGE = "com.ge.predix.audit";
+    private static final String BASE_PACKAGE = "org.servicebroker.routeservice";
 
     @Setter
     @Value("${spring.datasource.driver-class-name}")
@@ -109,7 +109,7 @@ public class OpenJpaConfig{
     public Map<String, Object> getVendorProperties() {
         HashMap<String, Object> map = new HashMap<>();
         map.put("openjpa.Log", "DefaultLevel=WARN, Tool=WARN, SQL=WARN, Runtime=WARN");
-        map.put("openjpa.jdbc.Schema", "jpa_audits" );
+        map.put("openjpa.jdbc.Schema", "route_service" );
         map.put("openjpa.jdbc.DBDictionary", "postgres");
         map.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
         map.put("openjpa.RuntimeUnenhancedClasses", "supported");

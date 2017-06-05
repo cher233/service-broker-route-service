@@ -2,11 +2,15 @@ package org.servicebroker.routeservice.service;
 
 import java.util.Map;
 
+import org.servicebroker.routeservice.entity.FilterToRoute;
 import org.servicebroker.routeservice.entity.Route;
+import org.servicebroker.routeservice.entity.ServiceInstanceEntity;
+import org.servicebroker.routeservice.model.FiltersType;
 import org.servicebroker.routeservice.repository.FilterToRouteRepository;
 import org.servicebroker.routeservice.repository.RouteRepository;
 import org.servicebroker.routeservice.repository.ServiceInstanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.servicebroker.exception.ServiceBrokerInvalidParametersException;
 import org.springframework.cloud.servicebroker.exception.ServiceInstanceBindingDoesNotExistException;
 import org.springframework.cloud.servicebroker.exception.ServiceInstanceBindingExistsException;
 import org.springframework.cloud.servicebroker.model.*;
@@ -19,56 +23,66 @@ import org.springframework.stereotype.Service;
 @Service
 public class RouteServiceInstanceBindingService implements ServiceInstanceBindingService {
 
+	@Autowired
 	private RouteRepository routeRepository;
+	@Autowired
 	private FilterToRouteRepository filterRepository;
+	@Autowired
 	private ServiceInstanceRepository serviceRepository;
 	private String routeURL = "";///////////////////////////////////////////////////////To write
 
-	@Autowired
-	public RouteServiceInstanceBindingService(  RouteRepository routeRepository, FilterToRouteRepository filterRepository,
-												ServiceInstanceRepository serviceRepository )
-	{
-		this.routeRepository = routeRepository;
-		this.filterRepository = filterRepository;
-		this.serviceRepository  = serviceRepository;
-	}
-	
+
 	@Override
 	public CreateServiceInstanceBindingResponse createServiceInstanceBinding(CreateServiceInstanceBindingRequest request) {
 
 		String bindingId = request.getBindingId();
-		String serviceInstanceId = request.getServiceInstanceId();
-		long serviceId =  1; //needs to change once rep is complete
-		Map<String, Object> parameters = request.getParameters();
-		String boundRoute = request.getBoundRoute();
+		ServiceInstanceEntity serviceInstance = serviceRepository.findFirstByServiceId(request.getServiceInstanceId());
 
-
-
-		Route routeBinding = routeRepository.findByServiceId(serviceId);
+		Route routeBinding = routeRepository.findFirstByBindingId(bindingId);
 		if (routeBinding != null) {
-			throw new ServiceInstanceBindingExistsException(serviceInstanceId, bindingId);
+			throw new ServiceInstanceBindingExistsException(serviceInstance.getServiceId(), bindingId);
 		}
 
-		routeBinding = new Route(serviceId,boundRoute);
-		routeRepository.save(routeBinding);
-		createFilterToRouteEntry(parameters,routeBinding.getRouteId(), request.getBoundAppGuid());
-		return new CreateServiceInstanceRouteBindingResponse().withRouteServiceUrl(routeURL);
+		routeBinding = new Route(serviceInstance, request.getBoundRoute(),bindingId);
+		boolean isValid = createFilterToRouteEntry(request.getParameters(), routeBinding, request.getBoundAppGuid());
+		if(isValid)
+		{
+			return new CreateServiceInstanceRouteBindingResponse().withRouteServiceUrl(routeURL);
+		}
+		else
+		{
+			return new CreateServiceInstanceRouteBindingResponse();
+		}
 	}
 
-	private void createFilterToRouteEntry(Map<String, Object> parameters, long routeId, String appGuid)
-	{
-		//foreach()
-//		FilterToRoute filterEntry = new FilterToRoute(new FilterToRouteKey () , appGuid);
-
-		//filterRepository.save(filterEntry);
+	private boolean createFilterToRouteEntry(Map<String, Object> parameters, Route route, String appGuid) {
+		FilterToRoute filterEntry;
+		if(parameters == null)
+		{
+			filterEntry = new FilterToRoute(FiltersType.DEFAULT, route, appGuid);
+			filterRepository.save(filterEntry);
+			return true;
+		}
+		else {
+			for (Map.Entry<String, Object> element : parameters.entrySet()) {
+				String filter = ((String) element.getValue()).toUpperCase();
+				if (FiltersType.contains(filter))
+				{
+					FiltersType filterId = FiltersType.valueOf(filter);
+					filterEntry = new FilterToRoute(filterId, route, appGuid);
+					filterRepository.save(filterEntry);
+				}
+				else return  false;
+			}
+			return true;
+		}
 	}
 
 	@Override
 	public void deleteServiceInstanceBinding(DeleteServiceInstanceBindingRequest request) {
 		String bindingId = request.getBindingId();
 		//ServiceInstanceBinding binding = getServiceInstanceBinding(bindingId);
-		long serviceId =  1; //needs to change once rep is complete
-		Route routeBinding = routeRepository.findByServiceId(serviceId);
+		Route routeBinding = routeRepository.findFirstByBindingId(bindingId);
 		if (routeBinding == null) {
 			throw new ServiceInstanceBindingDoesNotExistException(bindingId);
 		}

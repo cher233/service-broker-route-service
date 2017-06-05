@@ -1,6 +1,7 @@
 package org.servicebroker.routeservice.entity;
 
 import lombok.*;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -11,28 +12,31 @@ import java.util.Set;
  */
 @Data
 @NoArgsConstructor
+@RequiredArgsConstructor
 @Entity
 @Table(name = "route_info", schema="route_service")
 public class Route {
 
     @Id
-    @Getter
     @Column(name = "route_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long routeId;
 
     @NonNull
-    @Column(name = "service_id")
-    private Long serviceId;
+    //@Column(name = "service_id", nullable = false)
+    //private Long serviceId;
+    @OneToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    @JoinColumn(name = "service_id")
+    private ServiceInstanceEntity service;
 
     @NonNull
-    @Column(name = "route_name")
+    @Column(name = "route_name", nullable = false, length = 225)
     private String routeName;
 
-    public Route(Long serviceId, String routeName) {
-        this.serviceId = serviceId;
-        this.routeName = routeName;
-    }
+    @NonNull
+    @Column(name = "binding_id", nullable = false, length = 225)
+    private String bindingId;
+
 
     //@OneToMany(mappedBy = "route")
     //@ElementCollection

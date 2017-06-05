@@ -8,13 +8,11 @@
     <persistence-unit name="persistence-unit" transaction-type="RESOURCE_LOCAL">
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
         <class>org.servicebroker.routeservice.entity.Route</class>
-        <!--<class>com.ge.predix.audit.common.message.AuditEventV2</class>-->
-        <!--<class>com.ge.predix.audit.common.message.AuditTracingEvent</class>-->
-        <!--<class>com.ge.predix.audit.sub.entity.SubscribeMonitorStat</class>-->
+        <class>org.servicebroker.routeservice.entity.FilterToRoute</class>
         <properties>
             <property name="openjpa.archive.autodetection" value="class"/>
             <property name="openjpa.Log" value="DefaultLevel=WARN, Tool=WARN, SQL=WARN, Runtime=WARN" />
-            <property name="openjpa.jdbc.Schema" value="jpa_audits"/>
+            <property name="openjpa.jdbc.Schema" value="route_service"/>
             <property name="openjpa.jdbc.DBDictionary" value="postgres"/>
             <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
             <property name="openjpa.RuntimeUnenhancedClasses" value="supported" />
@@ -26,6 +24,5 @@
             <property name="openjpa.DataCache" value="false"/>
             <property name="openjpa.QueryCache" value="false"/>
         </properties>
-        <!--jar-file>/libs/audit-sdk-commons.jar</jar-file-->
     </persistence-unit>
 </persistence>

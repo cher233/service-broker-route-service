@@ -1,46 +1,47 @@
 CREATE SCHEMA route_service;
 CREATE TABLE route_service.service_instances
 (
-  service_id FLOAT PRIMARY KEY,
-  service VARCHAR(100) NOT NULL,
-  plan VARCHAR(100) ,
-  organization_guid VARCHAR(100) NOT NULL,
-  space_guid VARCHAR(100)  NOT NULL
+  id FLOAT PRIMARY KEY,
+  service_id VARCHAR(225) NOT NULL,
+  plan VARCHAR(225) ,
+  organization_guid VARCHAR(225) NOT NULL,
+  space_guid VARCHAR(225) NOT NULL
 );
 
 CREATE TABLE route_service.route_info
 (
 route_id FLOAT PRIMARY KEY ,
-route_name VARCHAR(500) NOT NULL,
-service_id FLOAT REFERENCES route_service.service_instances(service_id) ON UPDATE CASCADE  ON DELETE CASCADE
+route_name VARCHAR(225) NOT NULL,
+service_id FLOAT NOT NULL REFERENCES route_service.service_instances(id) ON UPDATE CASCADE  ON DELETE CASCADE,
+binding_id VARCHAR(225) NOT NULL
 );
 
 CREATE TABLE route_service.filter_info
 (
 filter_id INTEGER PRIMARY KEY ,
-filter_name VARCHAR(50) NOT NULL
+filter_name VARCHAR(225) NOT NULL
 );
 
 CREATE TABLE route_service.filters_to_route
 (
-route_id FLOAT REFERENCES route_service.route_Info(route_id) ON UPDATE CASCADE  ON DELETE CASCADE,
-app_guid VARCHAR(500) NOT NULL,
-filter_id INTEGER REFERENCES route_service.filter_Info(filter_id) ON UPDATE CASCADE  ON DELETE CASCADE,
-PRIMARY KEY (route_id,filter_id)
+id FLOAT PRIMARY KEY,
+route_id FLOAT NOT NULL REFERENCES route_service.route_info(route_id) ON UPDATE CASCADE  ON DELETE CASCADE,
+app_guid VARCHAR(225),
+filter_id INTEGER NOT NULL
 );
 
 CREATE TABLE route_service.problem_description
 (
   problem_id FLOAT PRIMARY KEY,
-  filter_id INTEGER REFERENCES route_service.filter_Info(filter_id) ON UPDATE CASCADE  ON DELETE CASCADE,
-  description VARCHAR(500) NOT NULL
+  filter_id INTEGER NOT NULL ,
+  description VARCHAR(225) NOT NULL
 );
 
 CREATE TABLE route_service.additional_info
 (
   id FLOAT PRIMARY KEY,
-  source_url VARCHAR(100),
-  destination_url VARCHAR(100),
+  source_url VARCHAR(225),
+  destination_url VARCHAR(225),
   time_of_problem TIME NOT NULL
 );
 
@@ -54,8 +55,8 @@ CREATE TABLE route_service.filter_findings
 );
 
 INSERT INTO route_service.filter_Info(filter_id, filter_name) VALUES
-(1, 'Default'),
-(2, 'Directory_Traversal'),
-(3, 'Authentication_Bypass'),
-(4,'Sql_Injection'),
-(5,'XSS');
+(1, 'default'),
+(2, 'directory_traversal'),
+(3, 'authentication_bypass'),
+(4,'sql_injection'),
+(5,'xss');
