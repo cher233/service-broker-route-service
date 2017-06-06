@@ -1,10 +1,7 @@
 package org.servicebroker.routeservice.entity;
 
 import lombok.*;
-import org.servicebroker.routeservice.model.ServiceInstance;
 
-
-import javax.annotation.sql.DataSourceDefinition;
 import javax.persistence.*;
 
 /**
@@ -17,8 +14,9 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Table(name = "service_instances", schema="route_service")
 public class ServiceInstanceEntity {
-
+    //@SequenceGenerator(name="serviceGen", initialValue=3, schema = "route_service",allocationSize=1)
     @Id
+    //@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "serviceGen")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 

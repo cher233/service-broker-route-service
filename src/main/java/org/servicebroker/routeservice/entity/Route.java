@@ -16,17 +16,18 @@ import java.util.Set;
 @Entity
 @Table(name = "route_info", schema="route_service")
 public class Route {
-
+    //@SequenceGenerator(name="routeGen", initialValue=2,schema = "route_service",allocationSize=1)
     @Id
     @Column(name = "route_id")
+    //@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "routeGen")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int routeId;
 
     @NonNull
     //@Column(name = "service_id", nullable = false)
     //private Long serviceId;
-    @OneToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
-    @JoinColumn(name = "service_id")
+    @OneToOne(cascade = {CascadeType.ALL})
+    @JoinColumn(name = "service_id", referencedColumnName = "id")
     private ServiceInstanceEntity service;
 
     @NonNull

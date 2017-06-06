@@ -44,7 +44,9 @@ public class RouteServiceInstanceBindingService implements ServiceInstanceBindin
 		}
 
 		routeBinding = new Route(serviceInstance, request.getBoundRoute(),bindingId);
-		boolean isValid = createFilterToRouteEntry(request.getParameters(), routeBinding, request.getBoundAppGuid());
+		//routeRepository.save(routeBinding);
+		boolean isValid = createFilterToRouteEntry(request.getParameters(), routeBinding,
+				request.getBoundAppGuid());
 		if(isValid)
 		{
 			return new CreateServiceInstanceRouteBindingResponse().withRouteServiceUrl(routeURL);
@@ -53,44 +55,43 @@ public class RouteServiceInstanceBindingService implements ServiceInstanceBindin
 		{
 			return new CreateServiceInstanceRouteBindingResponse();
 		}
+		//return new CreateServiceInstanceRouteBindingResponse();
 	}
 
 	private boolean createFilterToRouteEntry(Map<String, Object> parameters, Route route, String appGuid) {
-		FilterToRoute filterEntry;
 		if(parameters == null)
 		{
-			filterEntry = new FilterToRoute(FiltersType.DEFAULT, route, appGuid);
-			filterRepository.save(filterEntry);
+			filterRepository.save(new FilterToRoute(FiltersType.DEFAULT, route, appGuid));
 			return true;
 		}
-		else {
-			for (Map.Entry<String, Object> element : parameters.entrySet()) {
-				String filter = ((String) element.getValue()).toUpperCase();
-				if (FiltersType.contains(filter))
-				{
-					FiltersType filterId = FiltersType.valueOf(filter);
-					filterEntry = new FilterToRoute(filterId, route, appGuid);
-					filterRepository.save(filterEntry);
-				}
-				else return  false;
+		else return checkIfValidFilterAndSave(parameters,route, appGuid);
+	}
+
+	private boolean checkIfValidFilterAndSave(Map<String, Object> parameters, Route route, String appGuid)
+	{
+		for (Map.Entry<String, Object> element : parameters.entrySet()) {
+			String filter = ((String) element.getValue()).toUpperCase();
+			if (FiltersType.contains(filter))
+			{
+				FiltersType filterId = FiltersType.valueOf(filter);
+				filterRepository.save(new FilterToRoute(filterId, route, appGuid));
 			}
-			return true;
+			else return  false;
 		}
+		return true;
 	}
 
 	@Override
 	public void deleteServiceInstanceBinding(DeleteServiceInstanceBindingRequest request) {
-		String bindingId = request.getBindingId();
-		//ServiceInstanceBinding binding = getServiceInstanceBinding(bindingId);
-		Route routeBinding = routeRepository.findFirstByBindingId(bindingId);
+		Route routeBinding = getServiceInstanceBinding(request.getBindingId());
 		if (routeBinding == null) {
-			throw new ServiceInstanceBindingDoesNotExistException(bindingId);
+			throw new ServiceInstanceBindingDoesNotExistException(routeBinding.getBindingId());
 		}
 		routeRepository.delete(routeBinding.getRouteId());
 	}
 
-//	protected ServiceInstanceBinding getServiceInstanceBinding(String id) {
-//		return new ServiceInstanceBinding(id, "a",new Collections.emptyMap());
-//	}
+	protected Route getServiceInstanceBinding(String id) {
+		return  routeRepository.findFirstByBindingId(id);
+}
 
 }

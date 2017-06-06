@@ -12,6 +12,6 @@ import java.util.List;
 @Repository
 public interface FilterToRouteRepository extends JpaRepository<FilterToRoute, Integer> {
 
-    public List<FilterToRoute> findAllByRoute_RouteId(long id);
+    public List<FilterToRoute> findAllByRoute_RouteId(int id);
     public List<FilterToRoute> findAllByRoute_BindingId(String bindingId);
 }
