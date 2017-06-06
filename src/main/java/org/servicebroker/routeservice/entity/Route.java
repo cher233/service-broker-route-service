@@ -1,11 +1,11 @@
 package org.servicebroker.routeservice.entity;
 
-import lombok.*;
-import org.hibernate.annotations.Cascade;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by Nofar on 23/05/2017.

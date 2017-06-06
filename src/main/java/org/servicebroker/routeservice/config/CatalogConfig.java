@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Lists;
 import org.springframework.cloud.servicebroker.model.Catalog;
 import org.springframework.cloud.servicebroker.model.Plan;
 import org.springframework.cloud.servicebroker.model.ServiceDefinition;
@@ -22,17 +23,17 @@ public class CatalogConfig {
 				new ServiceDefinition(
 						"route-service-broker",
 						"route service",
-						"A simple route service broker implementation",
+						"A simple route service implementation",
 						true,
 						false,
-						Collections.singletonList(
+						Lists.newArrayList(
 								new Plan("route-service-plan",
 										"default",
 										"All services are created equally.",
 										getPlanMetadata())),
 						null,
 						getServiceDefinitionMetadata(),
-						Arrays.asList(ServiceDefinitionRequires.SERVICE_REQUIRES_ROUTE_FORWARDING.toString()),
+						Lists.newArrayList(ServiceDefinitionRequires.SERVICE_REQUIRES_ROUTE_FORWARDING.toString()),
 						null)));
 	}
 	
@@ -63,5 +64,4 @@ public class CatalogConfig {
 		
 		return Collections.singletonList(costsMap);
 	}
-
 }

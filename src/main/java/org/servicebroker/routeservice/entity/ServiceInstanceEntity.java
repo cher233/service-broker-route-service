@@ -11,7 +11,9 @@ import javax.persistence.*;
 @Data
 @Entity
 @RequiredArgsConstructor
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "service_instances", schema="route_service")
 public class ServiceInstanceEntity {
     //@SequenceGenerator(name="serviceGen", initialValue=3, schema = "route_service",allocationSize=1)
@@ -25,7 +27,7 @@ public class ServiceInstanceEntity {
     private String serviceId;
 
     @NonNull
-    @Column(nullable = true, length = 225)
+    @Column(name="plan_id",nullable = false, length = 225)
     private String plan;
 
     @NonNull

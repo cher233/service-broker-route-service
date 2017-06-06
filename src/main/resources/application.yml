@@ -1,23 +1,23 @@
-#    spring:
-#      profiles: cloud
-#      datasource:
-#          url: ${cloud.services.postgresql.connection.jdbcurl}&stringtype=unspecified
-#          driver-class-name: org.postgresql.Driver
-#          username: ${cloud.services.postgresql.connection.username}
-#          password: ${cloud.services.postgresql.connection.password}
-#          connectionProperties: stringtype=unspecified
-#          idleConnectionTestPeriod: 60
-#          idleMaxAge:  3600
-#          maxConnectionsPerPartition: 30
-#          minConnectionsPerPartition: 10
-#          partitionCount: 3
-#          acquireIncrement: 5
-#          statementsCacheSize: 100
-#      jpa:
-#          ddl-auto: none
-#          show-sql: true
+    spring:
+      profiles: cloud
+      datasource:
+          url: ${cloud.services.postgresql.connection.jdbcurl}&stringtype=unspecified
+          driver-class-name: org.postgresql.Driver
+          username: ${cloud.services.postgresql.connection.username}
+          password: ${cloud.services.postgresql.connection.password}
+          connectionProperties: stringtype=unspecified
+          idleConnectionTestPeriod: 60
+          idleMaxAge:  3600
+          maxConnectionsPerPartition: 30
+          minConnectionsPerPartition: 10
+          partitionCount: 3
+          acquireIncrement: 5
+          statementsCacheSize: 100
+      jpa:
+          ddl-auto: none
+          show-sql: true
 
-#   ---
+---
 
 spring:
   profiles: local
@@ -41,3 +41,7 @@ spring:
 spring:
   profiles:
     active: local
+
+route:
+  service:
+    url: https:/sdfsdfsdf

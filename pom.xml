@@ -9,7 +9,6 @@
 	<packaging>jar</packaging>
 
 	<name>service-broker-route-service</name>
-	<description></description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>

@@ -10,6 +10,7 @@ import org.servicebroker.routeservice.repository.FilterToRouteRepository;
 import org.servicebroker.routeservice.repository.RouteRepository;
 import org.servicebroker.routeservice.repository.ServiceInstanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.servicebroker.exception.ServiceBrokerInvalidParametersException;
 import org.springframework.cloud.servicebroker.exception.ServiceInstanceBindingDoesNotExistException;
 import org.springframework.cloud.servicebroker.exception.ServiceInstanceBindingExistsException;
@@ -25,11 +26,15 @@ public class RouteServiceInstanceBindingService implements ServiceInstanceBindin
 
 	@Autowired
 	private RouteRepository routeRepository;
+
 	@Autowired
 	private FilterToRouteRepository filterRepository;
+
 	@Autowired
 	private ServiceInstanceRepository serviceRepository;
-	private String routeURL = "";///////////////////////////////////////////////////////To write
+
+	@Value("${route.service.url}")
+	private String routeURL;
 
 
 	@Override
@@ -37,44 +42,49 @@ public class RouteServiceInstanceBindingService implements ServiceInstanceBindin
 
 		String bindingId = request.getBindingId();
 		ServiceInstanceEntity serviceInstance = serviceRepository.findFirstByServiceId(request.getServiceInstanceId());
+		//TODO check serviceInstance null
 
 		Route routeBinding = routeRepository.findFirstByBindingId(bindingId);
 		if (routeBinding != null) {
 			throw new ServiceInstanceBindingExistsException(serviceInstance.getServiceId(), bindingId);
 		}
 
-		routeBinding = new Route(serviceInstance, request.getBoundRoute(),bindingId);
-		//routeRepository.save(routeBinding);
-		boolean isValid = createFilterToRouteEntry(request.getParameters(), routeBinding,
-				request.getBoundAppGuid());
-		if(isValid)
-		{
+		routeBinding = new Route(serviceInstance, request.getBoundRoute(), bindingId);
+		boolean isValid = createFilterToRouteEntry(request.getParameters(), routeBinding, request.getBoundAppGuid());
+
+
+		if(isValid) {
 			return new CreateServiceInstanceRouteBindingResponse().withRouteServiceUrl(routeURL);
 		}
-		else
-		{
+		else {
 			return new CreateServiceInstanceRouteBindingResponse();
 		}
-		//return new CreateServiceInstanceRouteBindingResponse();
 	}
 
 	private boolean createFilterToRouteEntry(Map<String, Object> parameters, Route route, String appGuid) {
-		if(parameters == null)
-		{
-			filterRepository.save(new FilterToRoute(FiltersType.DEFAULT, route, appGuid));
+		if(parameters == null || parameters.isEmpty()) {
+			FilterToRoute filterToRoute = FilterToRoute.builder()
+					.filter(FiltersType.DEFAULT)
+					.route(route)
+					.appGuid(appGuid)
+					.build();
+			filterRepository.save(filterToRoute);
 			return true;
 		}
-		else return checkIfValidFilterAndSave(parameters,route, appGuid);
+		return checkIfValidFilterAndSave(parameters,route, appGuid);
 	}
 
-	private boolean checkIfValidFilterAndSave(Map<String, Object> parameters, Route route, String appGuid)
-	{
-		for (Map.Entry<String, Object> element : parameters.entrySet()) {
-			String filter = ((String) element.getValue()).toUpperCase();
-			if (FiltersType.contains(filter))
-			{
+	private boolean checkIfValidFilterAndSave(Map<String, Object> parameters, Route route, String appGuid) {
+		for (Object element : parameters.values()) {
+			String filter = element.toString().toUpperCase();
+			if (FiltersType.contains(filter)) {
 				FiltersType filterId = FiltersType.valueOf(filter);
-				filterRepository.save(new FilterToRoute(filterId, route, appGuid));
+				FilterToRoute filterToRoute = FilterToRoute.builder()
+						.filter(filterId)
+						.route(route)
+						.appGuid(appGuid)
+						.build();
+				filterRepository.save(filterToRoute);
 			}
 			else return  false;
 		}
@@ -92,6 +102,5 @@ public class RouteServiceInstanceBindingService implements ServiceInstanceBindin
 
 	protected Route getServiceInstanceBinding(String id) {
 		return  routeRepository.findFirstByBindingId(id);
-}
-
+	}
 }

@@ -1,8 +1,6 @@
 package org.servicebroker.routeservice.entity;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 import org.servicebroker.routeservice.model.FiltersType;
 
 import javax.persistence.*;
@@ -11,9 +9,10 @@ import javax.persistence.*;
  * Created by Cher on 24/05/2017.
  */
 
-
+@Builder
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "filters_to_route", schema="route_service")
 public class FilterToRoute{
@@ -39,16 +38,5 @@ public class FilterToRoute{
 
     @Column(name = "app_guid", length = 225)
     private String appGuid;
-
-    public FilterToRoute(FiltersType filter, Route route, String appGuid) {
-        this.filter = filter;
-        this.route = route;
-        this.appGuid = appGuid;
-    }
-
-    public FilterToRoute(FiltersType filter, Route route) {
-        this.filter = filter;
-        this.route = route;
-    }
 }
 
