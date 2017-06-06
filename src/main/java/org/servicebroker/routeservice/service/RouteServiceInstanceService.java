@@ -1,8 +1,13 @@
 package org.servicebroker.routeservice.service;
 
 
+import org.servicebroker.routeservice.entity.ServiceInstanceEntity;
 import org.servicebroker.routeservice.model.ServiceInstance;
+import org.servicebroker.routeservice.repository.ServiceInstanceRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.servicebroker.exception.ServiceInstanceDoesNotExistException;
+import org.springframework.cloud.servicebroker.exception.ServiceInstanceExistsException;
+import org.springframework.cloud.servicebroker.exception.ServiceInstanceUpdateNotSupportedException;
 import org.springframework.cloud.servicebroker.model.CreateServiceInstanceRequest;
 import org.springframework.cloud.servicebroker.model.CreateServiceInstanceResponse;
 import org.springframework.cloud.servicebroker.model.DeleteServiceInstanceRequest;
@@ -24,25 +29,20 @@ import java.util.Objects;
 public class RouteServiceInstanceService implements ServiceInstanceService {
 
 
-	
-	//private  repository;
-	
-//	@Autowired
-//	public RouteServiceInstanceService( serviceRepository) {
-//		this.repository = serviceRepository;
-//	}
-	
+	@Autowired
+	private ServiceInstanceRepository serviceRepository;
+
+
 	@Override
 	public CreateServiceInstanceResponse createServiceInstance(CreateServiceInstanceRequest request) {
-//		ServiceInstance instance = repository.findOne(request.getServiceInstanceId());
-//		if (instance != null) {
-//			throw new ServiceInstanceExistsException(request.getServiceInstanceId(), request.getServiceDefinitionId());
-//		}
 
-//		instance = new ServiceInstance(request);
-
-	//	repository.save(instance);
-
+		ServiceInstanceEntity instance = getServiceInstance(request.getServiceInstanceId());
+		if (instance != null) {
+			throw new ServiceInstanceExistsException(request.getServiceInstanceId(), request.getServiceDefinitionId());
+		}
+		ServiceInstanceEntity updatedInstanc = new ServiceInstanceEntity(request.getServiceInstanceId(),request.getPlanId()
+				,request.getOrganizationGuid(),request.getSpaceGuid());
+		serviceRepository.save(updatedInstanc);
 		return new CreateServiceInstanceResponse();
 	}
 
@@ -51,35 +51,25 @@ public class RouteServiceInstanceService implements ServiceInstanceService {
 		return new GetLastServiceOperationResponse().withOperationState(OperationState.SUCCEEDED);
 	}
 
-	public ServiceInstance getServiceInstance(String id) {
-		return null;
+	public ServiceInstanceEntity getServiceInstance(String id) {
+		return serviceRepository.findFirstByServiceId(id);
 	}
 
 	@Override
 	public DeleteServiceInstanceResponse deleteServiceInstance(DeleteServiceInstanceRequest request) throws ServiceInstanceDoesNotExistException {
-		String instanceId = request.getServiceInstanceId();
-	//	ServiceInstance instance = repository.findOne(instanceId);
-		Objects x = null;
-		if ( x != null) {
-			throw new ServiceInstanceDoesNotExistException(instanceId);
+		ServiceInstanceEntity instance = getServiceInstance(request.getServiceInstanceId());
+		if (instance == null) {
+			throw new ServiceInstanceDoesNotExistException(instance.getServiceId());
 		}
-
-//		repository.delete(instanceId);
+		serviceRepository.delete(instance.getId());
 		return new DeleteServiceInstanceResponse();
 	}
 
 	@Override
 	public UpdateServiceInstanceResponse updateServiceInstance(UpdateServiceInstanceRequest request) {
-		String instanceId = request.getServiceInstanceId();
-		ServiceInstance instance = null;
-		if (instance != null) {
-			throw new ServiceInstanceDoesNotExistException(instanceId);
-		}
 
-//		repository.delete(instanceId);
-//		ServiceInstance updatedInstance = new ServiceInstance(request);
-//		repository.save(updatedInstance);
-		return new UpdateServiceInstanceResponse();
+		throw new ServiceInstanceUpdateNotSupportedException("Not available");
+
 	}
 
 }

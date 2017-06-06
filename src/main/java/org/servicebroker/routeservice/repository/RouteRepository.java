@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
  * Created by Cher on 28/05/2017.
  */
 @Repository
-public interface RouteRepository extends JpaRepository<Route,Long>
+public interface RouteRepository extends JpaRepository<Route,Integer>
 {
 
     Route findFirstByBindingId(String id);

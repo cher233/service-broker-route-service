@@ -10,7 +10,7 @@ import java.util.List;
  * Created by Cher on 28/05/2017.
  */
 @Repository
-public interface FilterToRouteRepository extends JpaRepository<FilterToRoute, Long> {
+public interface FilterToRouteRepository extends JpaRepository<FilterToRoute, Integer> {
 
     public List<FilterToRoute> findAllByRoute_RouteId(long id);
     public List<FilterToRoute> findAllByRoute_BindingId(String bindingId);

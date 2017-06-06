@@ -20,7 +20,7 @@ public class ServiceInstanceEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     @NonNull
     @Column(name = "service_id", nullable = false, length = 225)

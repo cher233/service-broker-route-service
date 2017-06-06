@@ -20,7 +20,7 @@ public class Route {
     @Id
     @Column(name = "route_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long routeId;
+    private int routeId;
 
     @NonNull
     //@Column(name = "service_id", nullable = false)

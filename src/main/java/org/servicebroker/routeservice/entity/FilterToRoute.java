@@ -20,7 +20,7 @@ public class FilterToRoute{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     @NonNull
     @Enumerated(EnumType.ORDINAL)

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
  */
 
 @Repository
-public interface ServiceInstanceRepository extends JpaRepository<ServiceInstanceEntity,Long> {
+public interface ServiceInstanceRepository extends JpaRepository<ServiceInstanceEntity,Integer> {
     public ServiceInstanceEntity findFirstByServiceId(String id);
 
 }
