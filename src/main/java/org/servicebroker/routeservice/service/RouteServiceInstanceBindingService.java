@@ -24,9 +24,7 @@ import org.springframework.cloud.servicebroker.model.*;
 import org.springframework.cloud.servicebroker.service.ServiceInstanceBindingService;
 import org.springframework.stereotype.Service;
 
-/**
- *
- */
+
 @Service
 @Slf4j
 public class RouteServiceInstanceBindingService implements ServiceInstanceBindingService {
@@ -58,16 +56,8 @@ public class RouteServiceInstanceBindingService implements ServiceInstanceBindin
 				routeName(request.getBoundRoute()).
 				bindingId(request.getBindingId()).
 				build();
-		boolean isValid = createFilterToRouteEntry(request.getParameters(), routeBinding, request.getBoundAppGuid());
-		if(isValid)
-		{
-
-			return new CreateServiceInstanceRouteBindingResponse().withRouteServiceUrl(routeURL);
-		}
-		else
-		{
-			throw  new ServiceBrokerInvalidParametersException("Invalid filter Id!");
-		}
+		createFilterToRouteEntry(request.getParameters(), routeBinding, request.getBoundAppGuid());
+		return new CreateServiceInstanceRouteBindingResponse().withRouteServiceUrl(routeURL);
 	}
 
 	private ServiceInstanceEntity validateRequest(CreateServiceInstanceBindingRequest request)
@@ -100,7 +90,7 @@ public class RouteServiceInstanceBindingService implements ServiceInstanceBindin
 		return serviceInstance;
 	}
 
-	protected boolean createFilterToRouteEntry(Map<String, Object> parameters, Route route, String appGuid) {
+	protected void createFilterToRouteEntry(Map<String, Object> parameters, Route route, String appGuid) {
 		if(parameters == null || parameters.isEmpty())
 		{
 			FilterToRoute filterToRoute = FilterToRoute.builder().
@@ -108,28 +98,30 @@ public class RouteServiceInstanceBindingService implements ServiceInstanceBindin
 					filter(filterRepository.getOne(0)).
 					appGuid(appGuid).build();
 			filterToRouteRepositoryRepository.save(filterToRoute);
-			return true;
 		}
-		else return checkIfValidFilterAndSave(parameters,route, appGuid);
+		else checkIfValidFilterAndSave(parameters,route, appGuid);
 	}
 
-	private boolean checkIfValidFilterAndSave(Map<String, Object> parameters, Route route, String appGuid)
+	private void checkIfValidFilterAndSave(Map<String, Object> parameters, Route route, String appGuid)
 	{
 		List<FilterToRoute> filterToRouteList = new ArrayList<>();
 		for (Map.Entry<String, Object> element : parameters.entrySet()) {
 			Filter filter = filterRepository.getOne(Integer.getInteger(element.toString()));
-			if (filter!= null)
-			{
+			if (filter!= null){
 				FilterToRoute filterToRoute = FilterToRoute.builder().
 						route(route).
 						filter(filter).
 						appGuid(appGuid).build();
 				filterToRouteList.add(filterToRoute);
 			}
-			else return  false;
+			else {
+				String error = String.format("Filter id: %s does not exist!",element.toString());
+				throw  new ServiceBrokerInvalidParametersException(error);
+				}
+
 		}
+		routeRepository.save(route);
 		filterToRouteRepositoryRepository.save(filterToRouteList);
-		return true;
 	}
 
 	@Override
