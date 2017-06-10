@@ -1,7 +1,6 @@
 package org.servicebroker.routeservice.repository;
 
 import org.servicebroker.routeservice.entity.ServiceInstanceEntity;
-import org.servicebroker.routeservice.model.ServiceInstance;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,6 +10,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ServiceInstanceRepository extends JpaRepository<ServiceInstanceEntity,Integer> {
-    public ServiceInstanceEntity findFirstByServiceId(String id);
+    ServiceInstanceEntity findFirstByServiceId(String id);
 
 }

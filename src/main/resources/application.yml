@@ -41,3 +41,14 @@ spring:
 spring:
   profiles:
     active: local
+
+route:
+  service:
+    url: https:/sdfsdfsdf
+
+
+---
+security:
+  user:
+    password: ShinyNewForDB!
+    name: user

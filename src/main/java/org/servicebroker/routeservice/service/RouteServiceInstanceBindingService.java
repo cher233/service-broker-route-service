@@ -1,18 +1,25 @@
 package org.servicebroker.routeservice.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.servicebroker.routeservice.entity.Filter;
 import org.servicebroker.routeservice.entity.FilterToRoute;
 import org.servicebroker.routeservice.entity.Route;
 import org.servicebroker.routeservice.entity.ServiceInstanceEntity;
-import org.servicebroker.routeservice.model.FiltersType;
+import org.servicebroker.routeservice.repository.FilterRepository;
 import org.servicebroker.routeservice.repository.FilterToRouteRepository;
 import org.servicebroker.routeservice.repository.RouteRepository;
 import org.servicebroker.routeservice.repository.ServiceInstanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.servicebroker.exception.ServiceBrokerInvalidParametersException;
 import org.springframework.cloud.servicebroker.exception.ServiceInstanceBindingDoesNotExistException;
 import org.springframework.cloud.servicebroker.exception.ServiceInstanceBindingExistsException;
+import org.springframework.cloud.servicebroker.exception.ServiceInstanceDoesNotExistException;
 import org.springframework.cloud.servicebroker.model.*;
 import org.springframework.cloud.servicebroker.service.ServiceInstanceBindingService;
 import org.springframework.stereotype.Service;
@@ -21,47 +28,86 @@ import org.springframework.stereotype.Service;
  *
  */
 @Service
+@Slf4j
 public class RouteServiceInstanceBindingService implements ServiceInstanceBindingService {
 
 	@Autowired
+	@Setter
 	private RouteRepository routeRepository;
-	@Autowired
-	private FilterToRouteRepository filterRepository;
-	@Autowired
-	private ServiceInstanceRepository serviceRepository;
-	private String routeURL = "";///////////////////////////////////////////////////////To write
 
+	@Autowired
+	@Setter
+	private FilterToRouteRepository filterToRouteRepositoryRepository;
+
+	@Autowired
+	@Setter
+	private ServiceInstanceRepository serviceRepository;
+
+	@Autowired
+	@Setter
+	private FilterRepository filterRepository;
+
+	@Value("${route.service.url}")
+	private String routeURL;
 
 	@Override
 	public CreateServiceInstanceBindingResponse createServiceInstanceBinding(CreateServiceInstanceBindingRequest request) {
-
-		String bindingId = request.getBindingId();
-		ServiceInstanceEntity serviceInstance = serviceRepository.findFirstByServiceId(request.getServiceInstanceId());
-
-		Route routeBinding = routeRepository.findFirstByBindingId(bindingId);
-		if (routeBinding != null) {
-			throw new ServiceInstanceBindingExistsException(serviceInstance.getServiceId(), bindingId);
-		}
-
-		routeBinding = new Route(serviceInstance, request.getBoundRoute(),bindingId);
-		//routeRepository.save(routeBinding);
-		boolean isValid = createFilterToRouteEntry(request.getParameters(), routeBinding,
-				request.getBoundAppGuid());
+		ServiceInstanceEntity serviceInstance = validateRequest(request);
+		Route routeBinding = Route.builder().
+				service(serviceInstance).
+				routeName(request.getBoundRoute()).
+				bindingId(request.getBindingId()).
+				build();
+		boolean isValid = createFilterToRouteEntry(request.getParameters(), routeBinding, request.getBoundAppGuid());
 		if(isValid)
 		{
+
 			return new CreateServiceInstanceRouteBindingResponse().withRouteServiceUrl(routeURL);
 		}
 		else
 		{
-			return new CreateServiceInstanceRouteBindingResponse();
+			throw  new ServiceBrokerInvalidParametersException("Invalid filter Id!");
 		}
-		//return new CreateServiceInstanceRouteBindingResponse();
 	}
 
-	private boolean createFilterToRouteEntry(Map<String, Object> parameters, Route route, String appGuid) {
-		if(parameters == null)
+	private ServiceInstanceEntity validateRequest(CreateServiceInstanceBindingRequest request)
+			throws ServiceInstanceDoesNotExistException, ServiceInstanceBindingExistsException,ServiceBrokerInvalidParametersException
+	{
+		ServiceInstanceEntity serviceInstance = CheckIfServiceInstanceExist(request.getServiceInstanceId());
+		checkIfBindingIdExist(request.getBindingId(),request.getServiceInstanceId());
+		if(request.getBoundRoute() == null)
 		{
-			filterRepository.save(new FilterToRoute(FiltersType.DEFAULT, route, appGuid));
+			throw new ServiceBrokerInvalidParametersException("No bound Route exist!");
+		}
+		return serviceInstance;
+
+	}
+
+	private void checkIfBindingIdExist(String bindingId, String serviceId) throws ServiceInstanceBindingExistsException
+	{
+		Route routeBinding = routeRepository.findFirstByBindingId(bindingId);
+		if (routeBinding != null) {
+			throw new ServiceInstanceBindingExistsException(serviceId, bindingId);
+		}
+	}
+
+	private ServiceInstanceEntity CheckIfServiceInstanceExist(String serviceId)
+	{
+		ServiceInstanceEntity serviceInstance = serviceRepository.findFirstByServiceId(serviceId);
+		if(serviceInstance == null){
+			throw  new ServiceInstanceDoesNotExistException(serviceId);
+		}
+		return serviceInstance;
+	}
+
+	protected boolean createFilterToRouteEntry(Map<String, Object> parameters, Route route, String appGuid) {
+		if(parameters == null || parameters.isEmpty())
+		{
+			FilterToRoute filterToRoute = FilterToRoute.builder().
+					route(route).
+					filter(filterRepository.getOne(0)).
+					appGuid(appGuid).build();
+			filterToRouteRepositoryRepository.save(filterToRoute);
 			return true;
 		}
 		else return checkIfValidFilterAndSave(parameters,route, appGuid);
@@ -69,15 +115,20 @@ public class RouteServiceInstanceBindingService implements ServiceInstanceBindin
 
 	private boolean checkIfValidFilterAndSave(Map<String, Object> parameters, Route route, String appGuid)
 	{
+		List<FilterToRoute> filterToRouteList = new ArrayList<>();
 		for (Map.Entry<String, Object> element : parameters.entrySet()) {
-			String filter = ((String) element.getValue()).toUpperCase();
-			if (FiltersType.contains(filter))
+			Filter filter = filterRepository.getOne(Integer.getInteger(element.toString()));
+			if (filter!= null)
 			{
-				FiltersType filterId = FiltersType.valueOf(filter);
-				filterRepository.save(new FilterToRoute(filterId, route, appGuid));
+				FilterToRoute filterToRoute = FilterToRoute.builder().
+						route(route).
+						filter(filter).
+						appGuid(appGuid).build();
+				filterToRouteList.add(filterToRoute);
 			}
 			else return  false;
 		}
+		filterToRouteRepositoryRepository.save(filterToRouteList);
 		return true;
 	}
 
@@ -85,12 +136,21 @@ public class RouteServiceInstanceBindingService implements ServiceInstanceBindin
 	public void deleteServiceInstanceBinding(DeleteServiceInstanceBindingRequest request) {
 		Route routeBinding = getServiceInstanceBinding(request.getBindingId());
 		if (routeBinding == null) {
-			throw new ServiceInstanceBindingDoesNotExistException(routeBinding.getBindingId());
+			throw new ServiceInstanceBindingDoesNotExistException(request.getBindingId());
 		}
+		deleteAllFilterToRoute(request.getBindingId());
 		routeRepository.delete(routeBinding.getRouteId());
 	}
 
-	protected Route getServiceInstanceBinding(String id) {
+	private void deleteAllFilterToRoute(String bindingId)
+	{
+		List<FilterToRoute> filterToRouteList = filterToRouteRepositoryRepository.findAllByRoute_BindingId(bindingId);
+		if(!filterToRouteList.isEmpty()){
+			filterToRouteRepositoryRepository.delete(filterToRouteList);
+		}
+	}
+
+	private Route getServiceInstanceBinding(String id) {
 		return  routeRepository.findFirstByBindingId(id);
 }
 

@@ -28,24 +28,16 @@ public class CatalogConfig {
 						Collections.singletonList(
 								new Plan("route-service-plan",
 										"default",
-										"All services are created equally.",
+										"default plan for route sercvice",
 										getPlanMetadata())),
 						null,
-						getServiceDefinitionMetadata(),
+						null,
 						Arrays.asList(ServiceDefinitionRequires.SERVICE_REQUIRES_ROUTE_FORWARDING.toString()),
 						null)));
 	}
 	
 /* Used by Pivotal CF console */
 
-	private Map<String, Object> getServiceDefinitionMetadata() {
-		Map<String, Object> sdMetadata = new HashMap<>();
-		sdMetadata.put("displayName", "RouteService");
-		sdMetadata.put("longDescription", "Route Service");
-		sdMetadata.put("providerDisplayName", "Predix");
-		return sdMetadata;
-	}
-	
 	private Map<String,Object> getPlanMetadata() {
 		Map<String,Object> planMetadata = new HashMap<>();
 		planMetadata.put("costs", getCosts());
