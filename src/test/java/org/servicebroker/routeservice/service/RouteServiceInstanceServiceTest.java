@@ -3,7 +3,6 @@ package org.servicebroker.routeservice.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.servicebroker.routeservice.entity.ServiceInstanceEntity;
-import org.servicebroker.routeservice.model.ServiceInstance;
 import org.servicebroker.routeservice.repository.ServiceInstanceRepository;
 import org.springframework.cloud.servicebroker.exception.ServiceInstanceExistsException;
 import org.springframework.cloud.servicebroker.model.CreateServiceInstanceRequest;

@@ -4,12 +4,9 @@ package org.servicebroker.routeservice.service;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.servicebroker.routeservice.entity.ServiceInstanceEntity;
-import org.servicebroker.routeservice.model.ServiceInstance;
 import org.servicebroker.routeservice.repository.ServiceInstanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.servicebroker.exception.ServiceInstanceDoesNotExistException;
-import org.springframework.cloud.servicebroker.exception.ServiceInstanceExistsException;
-import org.springframework.cloud.servicebroker.exception.ServiceInstanceUpdateNotSupportedException;
+import org.springframework.cloud.servicebroker.exception.*;
 import org.springframework.cloud.servicebroker.model.CreateServiceInstanceRequest;
 import org.springframework.cloud.servicebroker.model.CreateServiceInstanceResponse;
 import org.springframework.cloud.servicebroker.model.DeleteServiceInstanceRequest;
@@ -22,8 +19,6 @@ import org.springframework.cloud.servicebroker.model.UpdateServiceInstanceRespon
 import org.springframework.cloud.servicebroker.service.ServiceInstanceService;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-
 @Service
 @Slf4j
 public class RouteServiceInstanceService implements ServiceInstanceService {
@@ -32,16 +27,11 @@ public class RouteServiceInstanceService implements ServiceInstanceService {
 	@Autowired
 	@Setter
 	private ServiceInstanceRepository serviceRepository;
-
-	private OperationState state;
-
-
 	@Override
 	public CreateServiceInstanceResponse createServiceInstance(CreateServiceInstanceRequest request) {
-
+		log.info("Validating request. \n");
 		ServiceInstanceEntity instance = getServiceInstance(request.getServiceInstanceId());
 		if (instance != null) {
-			state = OperationState.FAILED;
 			throw new ServiceInstanceExistsException(request.getServiceInstanceId(), request.getServiceDefinitionId());
 		}
 		ServiceInstanceEntity newInstance = ServiceInstanceEntity.builder()
@@ -57,7 +47,7 @@ public class RouteServiceInstanceService implements ServiceInstanceService {
 
 	@Override
 	public GetLastServiceOperationResponse getLastOperation(GetLastServiceOperationRequest request) {
-		return new GetLastServiceOperationResponse().withOperationState(state);
+		return new GetLastServiceOperationResponse().withOperationState(OperationState.SUCCEEDED);
 	}
 
 	protected ServiceInstanceEntity getServiceInstance(String id) {
@@ -66,11 +56,14 @@ public class RouteServiceInstanceService implements ServiceInstanceService {
 
 	@Override
 	public DeleteServiceInstanceResponse deleteServiceInstance(DeleteServiceInstanceRequest request) throws ServiceInstanceDoesNotExistException {
+		log.debug("Checking that instance: {0} exists.\n",request.getServiceInstanceId());
 		ServiceInstanceEntity instance = getServiceInstance(request.getServiceInstanceId());
 		if (instance == null) {
 			throw new ServiceInstanceDoesNotExistException(request.getServiceInstanceId());
 		}
+		log.debug("Stating to delete filters entries.\n");
 		serviceRepository.delete(instance.getId());
+		log.info("Delete successful, delete data:\n {0}\n", instance);
 		return new DeleteServiceInstanceResponse();
 	}
 
