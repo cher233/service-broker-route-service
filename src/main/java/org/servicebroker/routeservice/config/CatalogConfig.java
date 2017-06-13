@@ -23,7 +23,7 @@ public class CatalogConfig {
 				new ServiceDefinition(
 						"route-service-broker",
 						"route service",
-						"A simple route service implementation",
+						"A simple route service",
 						true,
 						false,
 						Lists.newArrayList(

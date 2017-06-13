@@ -35,7 +35,7 @@ public class RouteServiceInstanceService implements ServiceInstanceService {
 			throw new ServiceInstanceExistsException(request.getServiceInstanceId(), request.getServiceDefinitionId());
 		}
 		ServiceInstanceEntity newInstance = ServiceInstanceEntity.builder()
-				.serviceId(request.getServiceDefinitionId())
+				.serviceId(request.getServiceInstanceId())
 				.plan(request.getPlanId())
 				.organizationGuid(request.getOrganizationGuid())
 				.spaceGuid(request.getSpaceGuid())
@@ -56,14 +56,14 @@ public class RouteServiceInstanceService implements ServiceInstanceService {
 
 	@Override
 	public DeleteServiceInstanceResponse deleteServiceInstance(DeleteServiceInstanceRequest request) throws ServiceInstanceDoesNotExistException {
-		log.debug("Checking that instance: {0} exists.\n",request.getServiceInstanceId());
+		log.debug("Checking that instance: {} exists.\n",request.getServiceInstanceId());
 		ServiceInstanceEntity instance = getServiceInstance(request.getServiceInstanceId());
 		if (instance == null) {
 			throw new ServiceInstanceDoesNotExistException(request.getServiceInstanceId());
 		}
 		log.debug("Stating to delete filters entries.\n");
 		serviceRepository.delete(instance.getId());
-		log.info("Delete successful, delete data:\n {0}\n", instance);
+		log.info("Delete successful, delete data:\n {}\n", instance);
 		return new DeleteServiceInstanceResponse();
 	}
 

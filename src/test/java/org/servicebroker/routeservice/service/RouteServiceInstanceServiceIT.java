@@ -1,11 +1,11 @@
 package org.servicebroker.routeservice.service;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
+import org.servicebroker.routeservice.entity.ServiceInstanceEntity;
 import org.servicebroker.routeservice.repository.ServiceInstanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -16,15 +16,17 @@ import static org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType.
  * Created by Nofar on 06/06/2017.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest
 public class RouteServiceInstanceServiceIT {
 
-    private EmbeddedDatabase db;
+    private static EmbeddedDatabase db;
 
     @Autowired
     private ServiceInstanceRepository serviceRepository;
 
-    @Before
-    public void setUp() {
+
+    @BeforeClass
+    public static void setUp() {
         // creates an HSQL in-memory database populated from default scripts
         // classpath:schema.sql and classpath:data.sql
         db = new EmbeddedDatabaseBuilder()
@@ -32,17 +34,38 @@ public class RouteServiceInstanceServiceIT {
                 .setType(H2)
                 .setScriptEncoding("UTF-8")
                 .ignoreFailedDrops(true)
-                .addScript("schema.sql")
+                .addScript("db/migration/V1__Initial_Setup.sql")
                 .build();
     }
 
-    @Test
-    public void testDataAccess() {
 
+    @Test
+    public void testSave() {
+        ServiceInstanceEntity entity = ServiceInstanceEntity.builder().
+                serviceId("1").
+                organizationGuid("org").
+                spaceGuid("space").
+                plan("plan").
+                build();
+        ServiceInstanceEntity savedEntity =  serviceRepository.save(entity);
+        Assert.assertEquals(savedEntity,entity);
     }
 
-    @After
-    public void tearDown() {
+
+    @Test
+    public void testDataAccess() {
+        ServiceInstanceEntity entity = serviceRepository.findFirstByServiceId("1");
+        Assert.assertNotNull(entity);
+    }
+
+    @Test
+    public void testDelete() {
+        ServiceInstanceEntity entity = serviceRepository.findFirstByServiceId("1");
+        serviceRepository.delete(entity);
+    }
+
+    @AfterClass
+    public static void tearDown() {
         db.shutdown();
     }
 }
