@@ -1,18 +1,18 @@
 package org.servicebroker.routeservice.entity;
 
 import lombok.*;
-import org.servicebroker.routeservice.model.FiltersType;
-
 import javax.persistence.*;
 
 /**
  * Created by Cher on 24/05/2017.
  */
 
-@Builder
-@Data
+
+@Getter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "filters_to_route", schema="route_service")
 public class FilterToRoute{
@@ -22,21 +22,20 @@ public class FilterToRoute{
     private int id;
 
     @NonNull
-    @Enumerated(EnumType.ORDINAL)
-    @Column(name = "filter_id", nullable = false)
-    private FiltersType filter;
-
-    //@NonNull
-    //@Column(name = "route_id", nullable = false)
-    //private Long routeId;
+    @Setter
+    @OneToOne
+    @JoinColumn(name = "filter_id")
+    private Filter filter;
 
     @NonNull
-    @OneToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    @Setter
+    @OneToOne
     @JoinColumn(name = "route_id")
     private Route route;
 
 
-    @Column(name = "app_guid", length = 225)
+    @Column(name = "app_guid", length = 36)
     private String appGuid;
+
 }
 

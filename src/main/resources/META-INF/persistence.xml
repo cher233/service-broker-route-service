@@ -10,6 +10,7 @@
         <class>org.servicebroker.routeservice.entity.Route</class>
         <class>org.servicebroker.routeservice.entity.FilterToRoute</class>
         <class>org.servicebroker.routeservice.entity.ServiceInstanceEntity</class>
+        <class>org.servicebroker.routeservice.entity.Filter</class>
         <properties>
             <property name="openjpa.archive.autodetection" value="class"/>
             <property name="openjpa.Log" value="DefaultLevel=WARN, Tool=WARN, SQL=WARN, Runtime=WARN" />

@@ -36,7 +36,7 @@ public class RouteServiceInstanceService implements ServiceInstanceService {
 		}
 		ServiceInstanceEntity newInstance = ServiceInstanceEntity.builder()
 				.serviceId(request.getServiceInstanceId())
-				.plan(request.getPlanId())
+				.planId(request.getPlanId())
 				.organizationGuid(request.getOrganizationGuid())
 				.spaceGuid(request.getSpaceGuid())
 				.build();
