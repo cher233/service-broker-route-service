@@ -32,7 +32,6 @@ public class RouteServiceInstanceServiceTest {
         serviceInstanceRepository = mock(ServiceInstanceRepository.class);
         routeServiceInstanceService = spy(new RouteServiceInstanceService());
         routeServiceInstanceService.setServiceRepository(serviceInstanceRepository);
-        //    request = mock(CreateServiceInstanceRequest.class); //TODO
     }
 
     @Test(expected = ServiceInstanceExistsException.class)
