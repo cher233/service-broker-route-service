@@ -8,6 +8,7 @@ import javax.persistence.*;
  */
 
 @Getter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -21,7 +22,7 @@ public class Route {
 
     @NonNull
     @Setter
-    @OneToOne(cascade = {CascadeType.ALL})
+    @OneToOne
     @JoinColumn(name = "service_id", referencedColumnName = "id")
     private ServiceInstanceEntity service;
 

@@ -3,6 +3,7 @@ package org.servicebroker.routeservice.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +50,7 @@ public class RouteServiceInstanceBindingService implements ServiceInstanceBindin
 	private String routeURL;
 
 	@Override
-	public CreateServiceInstanceBindingResponse createServiceInstanceBinding(CreateServiceInstanceBindingRequest request) {
+	public CreateServiceInstanceRouteBindingResponse createServiceInstanceBinding(CreateServiceInstanceBindingRequest request) {
 		log.info("Validating request. \n");
 		ServiceInstanceEntity serviceInstance = validateRequest(request);
 		Route routeBinding = Route.builder().
@@ -94,7 +95,7 @@ public class RouteServiceInstanceBindingService implements ServiceInstanceBindin
 		return serviceInstance;
 	}
 
-	protected void createFilterToRouteEntry(Map<String, Object> parameters, Route route, String appGuid) {
+	private void createFilterToRouteEntry(Map<String, Object> parameters, Route route, String appGuid) {
 		log.info("Checking for filters.\n");
 		if(parameters == null || parameters.isEmpty())
 		{
@@ -102,19 +103,23 @@ public class RouteServiceInstanceBindingService implements ServiceInstanceBindin
 					route(route).
 					filter(filterRepository.getOne(0)).
 					appGuid(appGuid).build();
-			log.info("Save successful, saved data:\n {0}\n", routeRepository.save(route));
-			log.info("Save successful, saved data:\n {0}\n", filterToRouteRepositoryRepository.save(filterToRoute));
+			log.info("Save successful, saved data:\n {}\n", routeRepository.save(route).toString());
+			log.info("Save successful, saved data:\n {}\n", filterToRouteRepositoryRepository.save(filterToRoute).toString());
 		}
 		else checkIfValidFilterAndSave(parameters,route, appGuid);
 	}
 
 	private void checkIfValidFilterAndSave(Map<String, Object> parameters, Route route, String appGuid)
 	{
+		Filter filter = null;
 		List<FilterToRoute> filterToRouteList = new ArrayList<>();
 		for (Object element : parameters.values()) {
 			log.debug("Extracting filters.\n");
-			int filterId = Integer.parseInt(element.toString());
-			Filter filter = filterRepository.getOne(filterId);
+			String stringToCheck = element.toString();
+			if(stringToCheck.matches("^\\d+$")){
+				int id = Integer.parseInt(stringToCheck);
+				filter = filterRepository.getOne(id);
+			}
 			if (filter!= null){
 				filterToRouteList.add(FilterToRoute.builder().
 						route(route).
@@ -127,13 +132,13 @@ public class RouteServiceInstanceBindingService implements ServiceInstanceBindin
 				}
 
 		}
-		log.info("Save successful, saved data:\n {0}\n", routeRepository.save(route));
-		log.info("Save successful, saved data:\n {0}\n", filterToRouteRepositoryRepository.save(filterToRouteList));
+		log.info("Save successful, saved data:\n {}\n",routeRepository.save(route).toString());
+		log.info("Save successful, saved data:\n {}\n",filterToRouteRepositoryRepository.save(filterToRouteList).toString());
 	}
 
 	@Override
 	public void deleteServiceInstanceBinding(DeleteServiceInstanceBindingRequest request) {
-		log.debug("Checking that binding id: {0} exists.\n",request.getBindingId());
+		log.debug("Checking that binding id: {} exists.\n",request.getBindingId());
 		Route routeBinding = getServiceInstanceBinding(request.getBindingId());
 		if (routeBinding == null) {
 			throw new ServiceInstanceBindingDoesNotExistException(request.getBindingId());
@@ -141,7 +146,7 @@ public class RouteServiceInstanceBindingService implements ServiceInstanceBindin
 		log.debug("Stating to delete filters entries.\n");
 		deleteAllFilterToRoute(request.getBindingId());
 		routeRepository.delete(routeBinding.getRouteId());
-		log.info("Delete successful, delete data:\n {0}\n", routeBinding);
+		log.info("Delete successful, delete data:\n {}\n", routeBinding);
 	}
 
 	private void deleteAllFilterToRoute(String bindingId)
@@ -149,7 +154,7 @@ public class RouteServiceInstanceBindingService implements ServiceInstanceBindin
 		List<FilterToRoute> filterToRouteList = filterToRouteRepositoryRepository.findAllByRoute_BindingId(bindingId);
 		if(!filterToRouteList.isEmpty()){
 			filterToRouteRepositoryRepository.delete(filterToRouteList);
-			log.info("Delete successful, delete data:\n {0}\n", filterToRouteList);
+			log.info("Delete successful, delete data:\n {}\n", filterToRouteList);
 		}
 	}
 

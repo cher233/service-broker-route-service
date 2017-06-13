@@ -9,6 +9,7 @@ import javax.persistence.*;
 
 
 @Getter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -28,7 +29,7 @@ public class FilterToRoute{
 
     @NonNull
     @Setter
-    @OneToOne(cascade = {CascadeType.ALL})
+    @OneToOne
     @JoinColumn(name = "route_id")
     private Route route;
 
