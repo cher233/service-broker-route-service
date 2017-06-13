@@ -8,7 +8,7 @@ import javax.persistence.*;
  * Created by Nofar on 29/05/2017.
  */
 
-@Data
+@Getter
 @Entity
 @RequiredArgsConstructor
 @Builder

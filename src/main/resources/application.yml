@@ -45,3 +45,8 @@ spring:
 route:
   service:
     url: https:/sdfsdfsdf
+
+security:
+  user:
+    password: nofar581
+    name: user
