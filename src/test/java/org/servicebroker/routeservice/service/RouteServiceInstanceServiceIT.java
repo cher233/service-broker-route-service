@@ -45,7 +45,7 @@ public class RouteServiceInstanceServiceIT {
                 serviceId("1").
                 organizationGuid("org").
                 spaceGuid("space").
-                plan("plan").
+                planId("plan").
                 build();
         ServiceInstanceEntity savedEntity =  serviceRepository.save(entity);
         Assert.assertEquals(savedEntity,entity);
