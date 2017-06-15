@@ -55,7 +55,6 @@ public class RouteServiceInstanceBindingServiceIT {
 
     @Test
     public void testSaveRoute() {
-        //deleteAllRoutes();
         enterServiceInstance();
         ServiceInstanceEntity service = serviceRepository.findFirstByServiceId("1");
         enterRoute(service);

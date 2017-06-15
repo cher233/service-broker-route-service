@@ -43,7 +43,7 @@ public class RouteServiceInstanceBindingServiceTest {
         routeRepository = mock(RouteRepository.class);
         filterToRouteRepository = mock(FilterToRouteRepository.class);
         filterRepository = mock(FilterRepository.class);
-        bindingService = spy(new RouteServiceInstanceBindingService());
+        bindingService = new RouteServiceInstanceBindingService();
         bindingService.setServiceRepository(serviceInstanceRepository);
         bindingService.setRouteRepository(routeRepository);
         bindingService.setFilterToRouteRepositoryRepository(filterToRouteRepository);
