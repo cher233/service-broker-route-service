@@ -27,7 +27,7 @@ import java.util.List;
 @SpringBootTest
 public class RouteServiceInstanceBindingServiceIT {
 
-    private static EmbeddedDatabase db;
+    private  EmbeddedDatabase db;
 
     @Autowired
     private ServiceInstanceRepository serviceRepository;
@@ -41,10 +41,8 @@ public class RouteServiceInstanceBindingServiceIT {
     @Autowired
     private FilterRepository filterRepository;
 
-    @BeforeClass
-    public static void setUp() {
-        // creates an HSQL in-memory database populated from default scripts
-        // classpath:schema.sql and classpath:data.sql
+    @Before
+    public void setUp() {
         db = new EmbeddedDatabaseBuilder()
                 .generateUniqueName(true)
                 .setType(EmbeddedDatabaseType.H2)
@@ -55,7 +53,54 @@ public class RouteServiceInstanceBindingServiceIT {
 
     }
 
-   private void enterServiceInstance() {
+    @Test
+    public void testSaveRoute() {
+        //deleteAllRoutes();
+        enterServiceInstance();
+        ServiceInstanceEntity service = serviceRepository.findFirstByServiceId("1");
+        enterRoute(service);
+        Assert.assertNotNull(routeRepository.findFirstByBindingId("1"));
+    }
+
+    @Test
+    public void testSaveFilterToRouteList() {
+        // setup
+        enterServiceInstance();
+        ServiceInstanceEntity service = serviceRepository.findFirstByServiceId("1");
+        enterRoute(service);
+        // test
+        Route routeForeignKey = routeRepository.findFirstByBindingId("1");
+        enterFilterToRouteList(routeForeignKey);
+        Assert.assertNotNull(filterToRouteRepository.findAllByRoute_BindingId("1"));
+    }
+
+    @Test
+    public void testDeleteFilterToRoute() {
+        //setup
+        enterServiceInstance();
+        ServiceInstanceEntity service = serviceRepository.findFirstByServiceId("1");
+        enterRoute(service);
+        // test
+        Route route = routeRepository.findFirstByBindingId("1");
+        enterFilterToRouteList(route);
+        deleteFilterToRoute();
+        Assert.assertEquals(new ArrayList<FilterToRoute>(),filterToRouteRepository.findAllByRoute_BindingId("1"));
+
+    }
+
+    @Test
+    public  void testDeleteRout() {
+        //setup
+        enterServiceInstance();
+        ServiceInstanceEntity service = serviceRepository.findFirstByServiceId("1");
+        enterRoute(service);
+        // test
+        Route routeToDelete = routeRepository.findFirstByBindingId("1");
+        routeRepository.delete(routeToDelete);
+        Assert.assertNull(routeRepository.findFirstByBindingId("1"));
+    }
+
+    private void enterServiceInstance() {
         serviceRepository.save(ServiceInstanceEntity.builder().
                 serviceId("1").
                 planId("plan").
@@ -64,52 +109,26 @@ public class RouteServiceInstanceBindingServiceIT {
                 build());
     }
 
-    @Test
-    public void testASaveRoute()
+    private  void enterRoute(ServiceInstanceEntity service)
     {
-        deleteAllRoutes();
-        enterServiceInstance();
-        ServiceInstanceEntity service = serviceRepository.findFirstByServiceId("1");
         Route routeToSave = Route.builder().
                 routeName("https:\\sdfdsf").
                 service(service).
                 bindingId("1").
                 build();
-        Assert.assertEquals(routeToSave,routeRepository.save(routeToSave));
+        routeRepository.save(routeToSave);
     }
 
-    @Test
-    public void testBSaveFilterToRouteList()
-    {
+    private void enterFilterToRouteList(Route route) {
         List<FilterToRoute> filterToRouteList = new ArrayList<>();
-        Route routeForeignKey = routeRepository.findFirstByBindingId("1");
         Filter filterForeignKey = filterRepository.getOne(1);
-        filterToRouteList.add(FilterToRoute.builder().route(routeForeignKey).filter(filterForeignKey).build());
+        filterToRouteList.add(FilterToRoute.builder().route(route).filter(filterForeignKey).build());
         filterForeignKey = filterRepository.getOne(2);
-        filterToRouteList.add(FilterToRoute.builder().route(routeForeignKey).filter(filterForeignKey).build());
-        Assert.assertEquals(filterToRouteList,filterToRouteRepository.save(filterToRouteList));
+        filterToRouteList.add(FilterToRoute.builder().route(route).filter(filterForeignKey).build());
+        filterToRouteRepository.save(filterToRouteList);
     }
 
-    @Test
-    public void testCFindFilterToRouteList()
-    {
-        List<FilterToRoute> filterToRouteList = filterToRouteRepository.findAllByRoute_BindingId("1");
-        Assert.assertNotNull(filterToRouteList);
-        int routeId = routeRepository.findFirstByBindingId("1").getRouteId();
-        filterToRouteList = filterToRouteRepository.findAllByRoute_RouteId(routeId);
-        Assert.assertNotNull(filterToRouteList);
-    }
-
-    @Test
-    public void testDeleteRoute() {
-        deleteFilterToRoute();
-        Assert.assertEquals(new ArrayList<FilterToRoute>(),filterToRouteRepository.findAllByRoute_BindingId("1"));
-        Route routeToDelete = routeRepository.findFirstByBindingId("1");
-        routeRepository.delete(routeToDelete);
-        Assert.assertNull(routeRepository.findFirstByBindingId("1"));
-    }
-
-    private void deleteAllRoutes() {
+    private void deleteAllRoutesAndServices() {
         List<ServiceInstanceEntity> entityList = serviceRepository.findAll();
         List<Route> routeList = routeRepository.findAll();
         routeRepository.delete(routeList);
@@ -122,8 +141,10 @@ public class RouteServiceInstanceBindingServiceIT {
     }
 
 
-    @AfterClass
-    public static void tearDown() {
+    @After
+    public void tearDown() {
+        deleteFilterToRoute();
+        deleteAllRoutesAndServices();
         db.shutdown();
     }
 }

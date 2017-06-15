@@ -27,8 +27,6 @@ public class RouteServiceInstanceServiceIT {
 
     @BeforeClass
     public static void setUp() {
-        // creates an HSQL in-memory database populated from default scripts
-        // classpath:schema.sql and classpath:data.sql
         db = new EmbeddedDatabaseBuilder()
                 .generateUniqueName(true)
                 .setType(H2)

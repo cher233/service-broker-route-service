@@ -51,7 +51,7 @@ public class RouteServiceInstanceBindingService implements ServiceInstanceBindin
 
 	@Override
 	public CreateServiceInstanceRouteBindingResponse createServiceInstanceBinding(CreateServiceInstanceBindingRequest request) {
-		log.info("Validating request. \n");
+		log.info("Validating request: {}", request.toString());
 		ServiceInstanceEntity serviceInstance = validateRequest(request);
 		Route routeBinding = Route.builder().
 				service(serviceInstance).
@@ -71,14 +71,14 @@ public class RouteServiceInstanceBindingService implements ServiceInstanceBindin
 		{
 			throw new ServiceBrokerInvalidParametersException("No bound Route exist!");
 		}
-		log.debug("Passed all validations./n");
+		log.debug("Passed all validations.");
 		return serviceInstance;
 
 	}
 
 	private void checkIfBindingIdExist(String bindingId, String serviceId) throws ServiceInstanceBindingExistsException
 	{
-		log.debug("Validating that binding id doesn't exist in db.\n");
+		log.debug("Checking that binding id {} doesn't exist in db.",bindingId);
 		Route routeBinding = routeRepository.findFirstByBindingId(bindingId);
 		if (routeBinding != null) {
 			throw new ServiceInstanceBindingExistsException(serviceId, bindingId);
@@ -87,7 +87,7 @@ public class RouteServiceInstanceBindingService implements ServiceInstanceBindin
 
 	private ServiceInstanceEntity CheckIfServiceInstanceExist(String serviceId)
 	{
-		log.debug("Validating that service instance exist.");
+		log.debug("Validating that service instance {} exist.", serviceId);
 		ServiceInstanceEntity serviceInstance = serviceRepository.findFirstByServiceId(serviceId);
 		if(serviceInstance == null){
 			throw  new ServiceInstanceDoesNotExistException(serviceId);
@@ -96,65 +96,75 @@ public class RouteServiceInstanceBindingService implements ServiceInstanceBindin
 	}
 
 	private void createFilterToRouteEntry(Map<String, Object> parameters, Route route, String appGuid) {
-		log.info("Checking for filters.\n");
+		log.debug("Checking if filters exist...\n");
 		if(parameters == null || parameters.isEmpty())
 		{
 			FilterToRoute filterToRoute = FilterToRoute.builder().
 					route(route).
 					filter(filterRepository.getOne(0)).
 					appGuid(appGuid).build();
-			log.info("Save successful, saved data:\n {}\n", routeRepository.save(route).toString());
-			log.info("Save successful, saved data:\n {}\n", filterToRouteRepositoryRepository.save(filterToRoute).toString());
+			log.info("Saving route...");
+			routeRepository.save(route).toString();
+			log.info("Save successful, saved data:\n {}",route.toString() );
+			log.info("Saving filters for route...");
+			filterToRouteRepositoryRepository.save(filterToRoute);
+			log.info("Save successful, saved data:\n {}",filterToRoute.toString());
 		}
 		else checkIfValidFilterAndSave(parameters,route, appGuid);
 	}
 
 	private void checkIfValidFilterAndSave(Map<String, Object> parameters, Route route, String appGuid)
 	{
-		Filter filter = null;
 		List<FilterToRoute> filterToRouteList = new ArrayList<>();
 		for (Object element : parameters.values()) {
 			log.debug("Extracting filters.\n");
-			String stringToCheck = element.toString();
-			if(stringToCheck.matches("^\\d+$")){
-				int id = Integer.parseInt(stringToCheck);
-				filter = filterRepository.getOne(id);
-			}
-			if (filter!= null){
+			try {
+				Filter filter = filterRepository.getOne(Integer.parseInt(element.toString()));
+				if (filter!= null){
 				filterToRouteList.add(FilterToRoute.builder().
 						route(route).
 						filter(filter).
 						appGuid(appGuid).build());
-			}
-			else {
-				String error = String.format("Filter id: %s does not exist!",element.toString());
-				throw  new ServiceBrokerInvalidParametersException(error);
 				}
-
+				else {
+					String error = String.format("Filter id: %s does not exist!",element.toString());
+					throw  new ServiceBrokerInvalidParametersException(error);
+				}
+			}
+			catch (Exception e) {
+				String error = String.format("Filter id: %s isn't valid!",element.toString());
+				throw  new ServiceBrokerInvalidParametersException(error);
+			}
 		}
-		log.info("Save successful, saved data:\n {}\n",routeRepository.save(route).toString());
-		log.info("Save successful, saved data:\n {}\n",filterToRouteRepositoryRepository.save(filterToRouteList).toString());
+		log.info("Saving route...");
+		routeRepository.save(route);
+		log.info("Save successful, saved data:\n {}",route.toString());
+		log.info("Saving filters for route...");
+		filterToRouteRepositoryRepository.save(filterToRouteList);
+		log.info("Save successful, saved data:\n {}",filterToRouteList.toString());
 	}
 
 	@Override
 	public void deleteServiceInstanceBinding(DeleteServiceInstanceBindingRequest request) {
-		log.debug("Checking that binding id: {} exists.\n",request.getBindingId());
+		log.debug("Checking that binding id: {} exists for service id {}.",request.getBindingId(), request.getServiceInstanceId());
 		Route routeBinding = getServiceInstanceBinding(request.getBindingId());
 		if (routeBinding == null) {
 			throw new ServiceInstanceBindingDoesNotExistException(request.getBindingId());
 		}
-		log.debug("Stating to delete filters entries.\n");
+		log.debug("Stating to delete filters entries.");
 		deleteAllFilterToRoute(request.getBindingId());
+		log.info("Deleting route...");
 		routeRepository.delete(routeBinding.getRouteId());
-		log.info("Delete successful, delete data:\n {}\n", routeBinding);
+		log.info("Delete successful, delete data:\n {}", routeBinding.toString());
 	}
 
 	private void deleteAllFilterToRoute(String bindingId)
 	{
 		List<FilterToRoute> filterToRouteList = filterToRouteRepositoryRepository.findAllByRoute_BindingId(bindingId);
 		if(!filterToRouteList.isEmpty()){
+			log.info("Deleting filter for route...");
 			filterToRouteRepositoryRepository.delete(filterToRouteList);
-			log.info("Delete successful, delete data:\n {}\n", filterToRouteList);
+			log.info("Delete successful, deleted data:\n {}", filterToRouteList.toString());
 		}
 	}
 
