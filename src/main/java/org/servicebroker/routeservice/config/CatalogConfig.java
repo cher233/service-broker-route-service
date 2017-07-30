@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.assertj.core.util.Lists;
 import org.springframework.cloud.servicebroker.model.Catalog;
 import org.springframework.cloud.servicebroker.model.Plan;
 import org.springframework.cloud.servicebroker.model.ServiceDefinition;
@@ -22,17 +23,17 @@ public class CatalogConfig {
 				new ServiceDefinition(
 						"route-service-broker",
 						"route service",
-						"A simple route service broker implementation",
+						"A simple route service",
 						true,
 						false,
 						Collections.singletonList(
 								new Plan("route-service-plan",
 										"default",
-										"default plan for route sercvice",
+										"default plan for route service",
 										getPlanMetadata())),
 						null,
 						null,
-						Arrays.asList(ServiceDefinitionRequires.SERVICE_REQUIRES_ROUTE_FORWARDING.toString()),
+						Lists.newArrayList(ServiceDefinitionRequires.SERVICE_REQUIRES_ROUTE_FORWARDING.toString()),
 						null)));
 	}
 

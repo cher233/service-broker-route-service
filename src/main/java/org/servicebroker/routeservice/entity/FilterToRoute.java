@@ -1,6 +1,7 @@
 package org.servicebroker.routeservice.entity;
 
 import lombok.*;
+
 import javax.persistence.*;
 
 /**
@@ -25,7 +26,7 @@ public class FilterToRoute{
     @Setter
     @OneToOne
     @JoinColumn(name = "filter_id")
-    private Filter filter;
+    private FilterEntity filter;
 
     @NonNull
     @Setter

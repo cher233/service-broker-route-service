@@ -3,11 +3,14 @@ package org.servicebroker.routeservice.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.servicebroker.routeservice.entity.Filter;
+/*import org.cher.entities.FilterEntity;
+import org.cher.entities.FilterToRoute;
+import org.cher.entities.Route;
+import org.cher.entities.ServiceInstanceEntity;*/
+import org.servicebroker.routeservice.entity.FilterEntity;
 import org.servicebroker.routeservice.entity.FilterToRoute;
 import org.servicebroker.routeservice.entity.Route;
 import org.servicebroker.routeservice.entity.ServiceInstanceEntity;
@@ -119,7 +122,7 @@ public class RouteServiceInstanceBindingService implements ServiceInstanceBindin
 		for (Object element : parameters.values()) {
 			log.debug("Extracting filters.\n");
 			try {
-				Filter filter = filterRepository.getOne(Integer.parseInt(element.toString()));
+				FilterEntity filter = filterRepository.getOne(Integer.parseInt(element.toString()));
 				if (filter!= null){
 				filterToRouteList.add(FilterToRoute.builder().
 						route(route).
@@ -127,12 +130,12 @@ public class RouteServiceInstanceBindingService implements ServiceInstanceBindin
 						appGuid(appGuid).build());
 				}
 				else {
-					String error = String.format("Filter id: %s does not exist!",element.toString());
+					String error = String.format("FilterEntity id: %s does not exist!",element.toString());
 					throw  new ServiceBrokerInvalidParametersException(error);
 				}
 			}
 			catch (Exception e) {
-				String error = String.format("Filter id: %s isn't valid!",element.toString());
+				String error = String.format("FilterEntity id: %s isn't valid!",element.toString());
 				throw  new ServiceBrokerInvalidParametersException(error);
 			}
 		}

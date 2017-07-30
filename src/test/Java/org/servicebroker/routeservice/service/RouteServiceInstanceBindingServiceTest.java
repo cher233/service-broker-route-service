@@ -3,7 +3,11 @@ package org.servicebroker.routeservice.service;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.servicebroker.routeservice.entity.Filter;
+/*import org.cher.entities.FilterEntity;
+import org.cher.entities.FilterToRoute;
+import org.cher.entities.Route;
+import org.cher.entities.ServiceInstanceEntity;*/
+import org.servicebroker.routeservice.entity.FilterEntity;
 import org.servicebroker.routeservice.entity.FilterToRoute;
 import org.servicebroker.routeservice.entity.Route;
 import org.servicebroker.routeservice.entity.ServiceInstanceEntity;
@@ -16,11 +20,9 @@ import org.springframework.cloud.servicebroker.model.CreateServiceInstanceBindin
 import org.springframework.cloud.servicebroker.model.CreateServiceInstanceRouteBindingResponse;
 import org.springframework.cloud.servicebroker.model.DeleteServiceInstanceBindingRequest;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -105,7 +107,7 @@ public class RouteServiceInstanceBindingServiceTest {
         when(createRequest.getBoundRoute()).thenReturn("route");
         when(createRequest.getParameters()).thenReturn(map);
         when(mock(Map.class).values()).thenReturn(map.values());
-        when(filterRepository.getOne(1)).thenReturn(mock(Filter.class));
+        when(filterRepository.getOne(1)).thenReturn(mock(FilterEntity.class));
         when(routeRepository.save(any(Route.class))).thenReturn(mock(Route.class));
         when(filterToRouteRepository.save(any(FilterToRoute.class))).thenReturn(mock(FilterToRoute.class));
         CreateServiceInstanceRouteBindingResponse response = bindingService.createServiceInstanceBinding(createRequest);
@@ -121,7 +123,7 @@ public class RouteServiceInstanceBindingServiceTest {
         when(createRequest.getBoundAppGuid()).thenReturn("app");
         when(createRequest.getBoundRoute()).thenReturn("route");
         when(createRequest.getParameters()).thenReturn(null);
-        when(filterRepository.getOne(0)).thenReturn(mock(Filter.class));
+        when(filterRepository.getOne(0)).thenReturn(mock(FilterEntity.class));
         when(routeRepository.save(any(Route.class))).thenReturn(mock(Route.class));
         when(filterToRouteRepository.save(any(FilterToRoute.class))).thenReturn(mock(FilterToRoute.class));
         CreateServiceInstanceRouteBindingResponse response = bindingService.createServiceInstanceBinding(createRequest);

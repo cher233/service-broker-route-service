@@ -5,7 +5,7 @@
 
 	<groupId>org.springframework.cloud</groupId>
 	<artifactId>service-broker-route-service</artifactId>
-	<version>1.0.0.SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>service-broker-route-service</name>
@@ -112,6 +112,12 @@
 			<version>1.5.3.RELEASE</version>
 		</dependency>
 
+		<!--<dependency>
+			<groupId>org.cher.entities</groupId>
+			<artifactId>entities</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>-->
+
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-cloudfoundry-service-broker</artifactId>
@@ -192,6 +198,36 @@
 					</execution>
 				</executions>
 			</plugin>
+
+<!--			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.10</version>
+				<executions>
+					<execution>
+						<id>unpack</id>
+						<phase>package</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<artifactItems>
+						<artifactItem>
+							<groupId>org.cher.entities</groupId>
+							<artifactId>entities</artifactId>
+							<version>1.0.0-SNAPSHOT</version>
+							<type>jar</type>
+							<overWrite>false</overWrite>
+							<outputDirectory>${project.build.directory}/classes</outputDirectory>
+							<destFileName>entities-1.0.0-SNAPSHOT.jar</destFileName>
+							<includes>**/*.class,**/*.xml</includes>
+							<excludes>**/*test.class</excludes>
+						</artifactItem>
+					</artifactItems>
+				</configuration>
+			</plugin>-->
 		</plugins>
 	</build>
 

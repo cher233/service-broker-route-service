@@ -7,17 +7,12 @@ import org.servicebroker.routeservice.entity.ServiceInstanceEntity;
 import org.servicebroker.routeservice.repository.ServiceInstanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.servicebroker.exception.*;
-import org.springframework.cloud.servicebroker.model.CreateServiceInstanceRequest;
-import org.springframework.cloud.servicebroker.model.CreateServiceInstanceResponse;
-import org.springframework.cloud.servicebroker.model.DeleteServiceInstanceRequest;
-import org.springframework.cloud.servicebroker.model.DeleteServiceInstanceResponse;
-import org.springframework.cloud.servicebroker.model.GetLastServiceOperationRequest;
-import org.springframework.cloud.servicebroker.model.GetLastServiceOperationResponse;
-import org.springframework.cloud.servicebroker.model.OperationState;
-import org.springframework.cloud.servicebroker.model.UpdateServiceInstanceRequest;
-import org.springframework.cloud.servicebroker.model.UpdateServiceInstanceResponse;
+import org.springframework.cloud.servicebroker.model.*;
+import org.springframework.cloud.servicebroker.service.CatalogService;
 import org.springframework.cloud.servicebroker.service.ServiceInstanceService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @Slf4j
@@ -27,13 +22,22 @@ public class RouteServiceInstanceService implements ServiceInstanceService {
 	@Autowired
 	@Setter
 	private ServiceInstanceRepository serviceRepository;
+	@Autowired
+	CatalogService catalogService;
+
 	@Override
+
 	public CreateServiceInstanceResponse createServiceInstance(CreateServiceInstanceRequest request) {
-		log.info("Validating request. \n");
+		log.info("Validating request: {}", request.toString());
 		ServiceInstanceEntity instance = getServiceInstance(request.getServiceInstanceId());
 		if (instance != null) {
 			throw new ServiceInstanceExistsException(request.getServiceInstanceId(), request.getServiceDefinitionId());
 		}
+		ServiceDefinition sd = catalogService.getServiceDefinition(request
+				.getServiceDefinitionId());
+
+		checkIfDefinitionIdAndPlanIdExist(sd,request);
+
 		ServiceInstanceEntity newInstance = ServiceInstanceEntity.builder()
 				.serviceId(request.getServiceInstanceId())
 				.planId(request.getPlanId())
@@ -43,6 +47,22 @@ public class RouteServiceInstanceService implements ServiceInstanceService {
 		serviceRepository.save(newInstance);
 		log.info("saving instance {}", newInstance);
 		return new CreateServiceInstanceResponse();
+	}
+
+	private void checkIfDefinitionIdAndPlanIdExist(ServiceDefinition serviceDefinition,CreateServiceInstanceRequest request ) throws ServiceInstanceBindingExistsException {
+		List<Plan> getPlan = serviceDefinition.getPlans();
+
+		if (serviceDefinition == null) {
+			throw new ServiceBrokerException(
+					"Unable to find service definition with id: "
+							+ request.getServiceDefinitionId());
+		}
+
+		if (getPlan == null) {
+			throw new ServiceBrokerException(
+					"Unable to find plan: "
+							+ request.getPlanId());
+		}
 	}
 
 	@Override
@@ -56,14 +76,14 @@ public class RouteServiceInstanceService implements ServiceInstanceService {
 
 	@Override
 	public DeleteServiceInstanceResponse deleteServiceInstance(DeleteServiceInstanceRequest request) throws ServiceInstanceDoesNotExistException {
-		log.debug("Checking that instance: {} exists.\n",request.getServiceInstanceId());
+		log.debug("Checking that instance: {} exists.",request.getServiceInstanceId());
 		ServiceInstanceEntity instance = getServiceInstance(request.getServiceInstanceId());
 		if (instance == null) {
 			throw new ServiceInstanceDoesNotExistException(request.getServiceInstanceId());
 		}
-		log.debug("Stating to delete filters entries.\n");
+		log.debug("Stating to delete filters entries.");
 		serviceRepository.delete(instance.getId());
-		log.info("Delete successful, delete data:\n {}\n", instance);
+		log.info("Delete successful, delete data: {}", instance);
 		return new DeleteServiceInstanceResponse();
 	}
 

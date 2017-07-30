@@ -2,7 +2,11 @@ package org.servicebroker.routeservice.service;
 
 import org.junit.*;
 import org.junit.runner.RunWith;
-import org.servicebroker.routeservice.entity.Filter;
+/*import org.cher.entities.FilterEntity;
+import org.cher.entities.FilterToRoute;
+import org.cher.entities.Route;
+import org.cher.entities.ServiceInstanceEntity;*/
+import org.servicebroker.routeservice.entity.FilterEntity;
 import org.servicebroker.routeservice.entity.FilterToRoute;
 import org.servicebroker.routeservice.entity.Route;
 import org.servicebroker.routeservice.entity.ServiceInstanceEntity;
@@ -120,7 +124,7 @@ public class RouteServiceInstanceBindingServiceIT {
 
     private void enterFilterToRouteList(Route route) {
         List<FilterToRoute> filterToRouteList = new ArrayList<>();
-        Filter filterForeignKey = filterRepository.getOne(1);
+        FilterEntity filterForeignKey = filterRepository.getOne(1);
         filterToRouteList.add(FilterToRoute.builder().route(route).filter(filterForeignKey).build());
         filterForeignKey = filterRepository.getOne(2);
         filterToRouteList.add(FilterToRoute.builder().route(route).filter(filterForeignKey).build());

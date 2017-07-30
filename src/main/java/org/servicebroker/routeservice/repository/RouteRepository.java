@@ -1,5 +1,6 @@
 package org.servicebroker.routeservice.repository;
 
+//import org.cher.entities.Route;
 import org.servicebroker.routeservice.entity.Route;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -11,6 +12,7 @@ import java.util.List;
  */
 @Repository
 public interface RouteRepository extends JpaRepository<Route,Integer> {
+
     Route findFirstByBindingId(String id);
     List<Route> findAllByBindingId(String bindingId);
 }

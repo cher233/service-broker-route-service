@@ -1,6 +1,7 @@
 package org.servicebroker.routeservice.entity;
 
 import lombok.*;
+
 import javax.persistence.*;
 
 /**

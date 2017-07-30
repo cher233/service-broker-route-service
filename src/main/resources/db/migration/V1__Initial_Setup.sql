@@ -33,8 +33,8 @@ filter_id INTEGER NOT NULL  REFERENCES route_service.filter_info(filter_id) ON U
 CREATE TABLE route_service.problem_description
 (
   problem_id SERIAL PRIMARY KEY,
-  filter_id INTEGER NOT NULL ,
-  description VARCHAR(225) NOT NULL
+  filter_id INTEGER NOT NULL REFERENCES route_service.filter_info(filter_id) ON UPDATE CASCADE  ON DELETE CASCADE,
+  description Text NOT NULL
 );
 
 CREATE TABLE route_service.additional_info
