@@ -62,7 +62,7 @@ public class RouteServiceInstanceBindingService implements ServiceInstanceBindin
 				bindingId(request.getBindingId()).
 				build();
 		createFilterToRouteEntry(request.getParameters(), routeBinding, request.getBoundAppGuid());
-		return new CreateServiceInstanceRouteBindingResponse().withRouteServiceUrl(routeURL);
+		return new CreateServiceInstanceRouteBindingResponse();
 	}
 
 	private ServiceInstanceEntity validateRequest(CreateServiceInstanceBindingRequest request)

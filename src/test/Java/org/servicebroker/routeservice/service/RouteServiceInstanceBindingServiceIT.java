@@ -103,7 +103,7 @@ public class RouteServiceInstanceBindingServiceIT {
         Assert.assertNull(routeRepository.findFirstByBindingId("1"));
     }
 
-    private void enterServiceInstance() {
+   private void enterServiceInstance() {
         serviceRepository.save(ServiceInstanceEntity.builder().
                 serviceId("1").
                 planId("plan").

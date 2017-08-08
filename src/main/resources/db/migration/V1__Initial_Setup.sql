@@ -42,7 +42,7 @@ CREATE TABLE route_service.additional_info
   id SERIAL PRIMARY KEY,
   source_url VARCHAR(225),
   destination_url VARCHAR(225),
-  time_of_problem TIME NOT NULL
+  time_of_problem TIMESTAMP NOT NULL
 );
 
 CREATE TABLE route_service.filter_findings
