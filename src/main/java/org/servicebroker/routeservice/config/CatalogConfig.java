@@ -22,7 +22,7 @@ public class CatalogConfig {
 		return new Catalog(Collections.singletonList(
 				new ServiceDefinition(
 						"route-service-broker",
-						"route service",
+						"route-service",
 						"A simple route service",
 						true,
 						false,

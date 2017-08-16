@@ -9,6 +9,9 @@ import org.springframework.cloud.servicebroker.exception.ServiceInstanceDoesNotE
 import org.springframework.cloud.servicebroker.exception.ServiceInstanceExistsException;
 import org.springframework.cloud.servicebroker.exception.ServiceInstanceUpdateNotSupportedException;
 import org.springframework.cloud.servicebroker.model.*;
+import org.springframework.cloud.servicebroker.service.CatalogService;
+
+import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -25,12 +28,15 @@ public class RouteServiceInstanceServiceTest {
     private GetLastServiceOperationRequest requestGet;
     private DeleteServiceInstanceRequest requestDelete;
     private UpdateServiceInstanceRequest requestUpdate;
+    private CatalogService catalogService;
 
     @Before
     public void init() {
         serviceInstanceRepository = mock(ServiceInstanceRepository.class);
         routeServiceInstanceService = spy(new RouteServiceInstanceService());
         routeServiceInstanceService.setServiceRepository(serviceInstanceRepository);
+        catalogService  = mock(CatalogService.class);
+        routeServiceInstanceService.setCatalogService(catalogService);
     }
 
     @Test(expected = ServiceInstanceExistsException.class)
@@ -50,6 +56,8 @@ public class RouteServiceInstanceServiceTest {
         when(requestCreate.getPlanId()).thenReturn("plan");
         when(requestCreate.getOrganizationGuid()).thenReturn("org");
         when(requestCreate.getSpaceGuid()).thenReturn("space");
+        when(catalogService.getServiceDefinition(any())).thenReturn(mock(ServiceDefinition.class));
+        when(mock(ServiceDefinition.class).getPlans()).thenReturn(mock(List.class));
         when(serviceInstanceRepository.save(any(ServiceInstanceEntity.class))).thenReturn(mock(ServiceInstanceEntity.class));
         CreateServiceInstanceResponse createServiceInstanceResponse = routeServiceInstanceService.createServiceInstance(requestCreate);
         verify(routeServiceInstanceService).getServiceInstance(any());

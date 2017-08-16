@@ -22,7 +22,9 @@ public class RouteServiceInstanceService implements ServiceInstanceService {
 	@Autowired
 	@Setter
 	private ServiceInstanceRepository serviceRepository;
+
 	@Autowired
+	@Setter
 	CatalogService catalogService;
 
 	@Override

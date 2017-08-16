@@ -1,6 +1,5 @@
 package org.servicebroker.routeservice.repository;
 
-//import org.cher.entities.ServiceInstanceEntity;
 import org.servicebroker.routeservice.entity.ServiceInstanceEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

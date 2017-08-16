@@ -6,10 +6,6 @@ import java.util.Map;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-/*import org.cher.entities.FilterEntity;
-import org.cher.entities.FilterToRoute;
-import org.cher.entities.Route;
-import org.cher.entities.ServiceInstanceEntity;*/
 import org.servicebroker.routeservice.entity.FilterEntity;
 import org.servicebroker.routeservice.entity.FilterToRoute;
 import org.servicebroker.routeservice.entity.Route;
@@ -49,20 +45,21 @@ public class RouteServiceInstanceBindingService implements ServiceInstanceBindin
 	@Setter
 	private FilterRepository filterRepository;
 
-	@Value("${route.service.url}")
+	@Value("${ROUTE_SERVICE_URL}")
 	private String routeURL;
 
 	@Override
 	public CreateServiceInstanceRouteBindingResponse createServiceInstanceBinding(CreateServiceInstanceBindingRequest request) {
 		log.info("Validating request: {}", request.toString());
 		ServiceInstanceEntity serviceInstance = validateRequest(request);
+		String fullRoute = "https://"+request.getBoundRoute();
 		Route routeBinding = Route.builder().
 				service(serviceInstance).
-				routeName(request.getBoundRoute()).
+				routeName(fullRoute).
 				bindingId(request.getBindingId()).
 				build();
 		createFilterToRouteEntry(request.getParameters(), routeBinding, request.getBoundAppGuid());
-		return new CreateServiceInstanceRouteBindingResponse();
+		return new CreateServiceInstanceRouteBindingResponse().withRouteServiceUrl(routeURL);
 	}
 
 	private ServiceInstanceEntity validateRequest(CreateServiceInstanceBindingRequest request)

@@ -40,11 +40,7 @@ spring:
 ---
 spring:
   profiles:
-    active: local
-
-route:
-  service:
-    url: https:/sdfsdfsdf
+    active: cloud
 
 security:
   user:
