@@ -13,6 +13,7 @@ import org.springframework.cloud.servicebroker.service.ServiceInstanceService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +45,6 @@ public class RouteServiceInstanceService implements ServiceInstanceService {
 		}
 		ServiceDefinition sd = catalogService.getServiceDefinition(request
 				.getServiceDefinitionId());
-
 		checkIfDefinitionIdAndPlanIdExist(sd,request);
 		String password=checkIfExistAndHashPassword(request.getParameters());
 		ServiceInstanceEntity newInstance = ServiceInstanceEntity.builder()
@@ -69,19 +69,22 @@ public class RouteServiceInstanceService implements ServiceInstanceService {
 	}
 
 	private void checkIfDefinitionIdAndPlanIdExist(ServiceDefinition serviceDefinition,CreateServiceInstanceRequest request ) throws ServiceInstanceBindingExistsException {
-		List<Plan> getPlan = serviceDefinition.getPlans();
-
-		if (serviceDefinition == null) {
+		List<Plan> planList = serviceDefinition.getPlans();
+		String planToMatch = request.getPlanId();
+		boolean result = false;
+		if (serviceDefinition == null)
 			throw new ServiceBrokerException(
-					"Unable to find service definition with id: "
-							+ request.getServiceDefinitionId());
+					"Unable to find service definition with id: " + request.getServiceDefinitionId());
+		for(Plan plan : planList){
+			if(plan.getId().equals(planToMatch)){
+				result = true;
+				break;
+			}
 		}
 
-		if (getPlan == null) {
+		if (!result)
 			throw new ServiceBrokerException(
-					"Unable to find plan: "
-							+ request.getPlanId());
-		}
+					"Unable to find plan: " + request.getPlanId());
 	}
 
 	@Override
