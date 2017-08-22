@@ -109,6 +109,7 @@ public class RouteServiceInstanceBindingServiceIT {
                 planId("plan").
                 organizationGuid("org").
                 spaceGuid("space").
+                password("Password").
                 build());
     }
 

@@ -10,9 +10,12 @@ import org.springframework.cloud.servicebroker.exception.*;
 import org.springframework.cloud.servicebroker.model.*;
 import org.springframework.cloud.servicebroker.service.CatalogService;
 import org.springframework.cloud.servicebroker.service.ServiceInstanceService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -27,6 +30,10 @@ public class RouteServiceInstanceService implements ServiceInstanceService {
 	@Setter
 	CatalogService catalogService;
 
+	@Autowired
+	@Setter
+	PasswordEncoder passwordEncoder;
+
 	@Override
 
 	public CreateServiceInstanceResponse createServiceInstance(CreateServiceInstanceRequest request) {
@@ -39,16 +46,26 @@ public class RouteServiceInstanceService implements ServiceInstanceService {
 				.getServiceDefinitionId());
 
 		checkIfDefinitionIdAndPlanIdExist(sd,request);
-
+		String password=checkIfExistAndHashPassword(request.getParameters());
 		ServiceInstanceEntity newInstance = ServiceInstanceEntity.builder()
 				.serviceId(request.getServiceInstanceId())
 				.planId(request.getPlanId())
 				.organizationGuid(request.getOrganizationGuid())
+				.password(password)
 				.spaceGuid(request.getSpaceGuid())
 				.build();
 		serviceRepository.save(newInstance);
 		log.info("saving instance {}", newInstance);
 		return new CreateServiceInstanceResponse();
+	}
+
+	private String checkIfExistAndHashPassword(Map<String,Object> params){
+		Object password = params.get("password");
+		if (password == null) {
+			throw  new ServiceBrokerInvalidParametersException("password was not provided");
+		}
+		String hashedPassword = passwordEncoder.encode(password.toString());
+		return hashedPassword;
 	}
 
 	private void checkIfDefinitionIdAndPlanIdExist(ServiceDefinition serviceDefinition,CreateServiceInstanceRequest request ) throws ServiceInstanceBindingExistsException {

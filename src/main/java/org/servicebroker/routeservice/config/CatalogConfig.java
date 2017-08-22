@@ -21,7 +21,7 @@ public class CatalogConfig {
 	public Catalog catalog() {
 		return new Catalog(Collections.singletonList(
 				new ServiceDefinition(
-						"route-service-broker",
+						"route-service",
 						"route-service",
 						"A simple route service",
 						true,
