@@ -41,11 +41,12 @@ public class RouteServiceInstanceServiceIT {
     @Test
     public void testSave() {
         ServiceInstanceEntity entity = ServiceInstanceEntity.builder().
-                serviceId("1").
-                organizationGuid("org").
-                spaceGuid("space").
-                planId("plan").
-                build();
+                serviceId("1")
+                .organizationGuid("org")
+                .spaceGuid("space")
+                .planId("plan")
+                .password("password")
+                .build();
         ServiceInstanceEntity savedEntity =  serviceRepository.save(entity);
         Assert.assertEquals(savedEntity,entity);
     }

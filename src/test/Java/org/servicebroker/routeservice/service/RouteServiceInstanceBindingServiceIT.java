@@ -2,10 +2,6 @@ package org.servicebroker.routeservice.service;
 
 import org.junit.*;
 import org.junit.runner.RunWith;
-/*import org.cher.entities.FilterEntity;
-import org.cher.entities.FilterToRoute;
-import org.cher.entities.Route;
-import org.cher.entities.ServiceInstanceEntity;*/
 import org.servicebroker.routeservice.entity.FilterEntity;
 import org.servicebroker.routeservice.entity.FilterToRoute;
 import org.servicebroker.routeservice.entity.Route;
@@ -88,7 +84,6 @@ public class RouteServiceInstanceBindingServiceIT {
         enterFilterToRouteList(route);
         deleteFilterToRoute();
         Assert.assertEquals(new ArrayList<FilterToRoute>(),filterToRouteRepository.findAllByRoute_BindingId("1"));
-
     }
 
     @Test
