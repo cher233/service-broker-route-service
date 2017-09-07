@@ -101,7 +101,7 @@ public class RouteServiceInstanceBindingService implements ServiceInstanceBindin
 		{
 			FilterToRoute filterToRoute = FilterToRoute.builder().
 					route(route).
-					filter(filterRepository.getOne(0)).
+					filter(filterRepository.getOne(0)). //default filter id
 					appGuid(appGuid).build();
 			log.info("Saving route...");
 			routeRepository.save(route).toString();
